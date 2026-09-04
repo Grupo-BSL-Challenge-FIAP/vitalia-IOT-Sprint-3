@@ -10,6 +10,14 @@ from api.recommendation_service import RecommendationService
 
 from api.services.llm_service import generate_pet_insight
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ENV = os.getenv("APP_ENV", "development")
+SECRET_KEY = os.getenv("API_SECRET_KEY", "default-secret")
+
 app = FastAPI(title="Vitalia AI API", description="API de Inteligência Artificial para Pets com LLM", version="1.2")
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../models/trained/vitalia_rf_model.pkl')
@@ -125,7 +133,11 @@ async def predict_pet_status(pet_id: str, data: PetDataInput):
         raise HTTPException(status_code=500, detail="Modelo de IA não carregado.")
     
 
-    features_df = pd.DataFrame([data.model_dump()])
+    features_df = pd.DataFrame([{
+        "atividade": dados.atividade_diaria_pct,
+        "peso_var": dados.peso_kg,
+        "sono": 1 if dados.sono_diario_pct > 50 else 0
+    }])
     prediction = model.predict(features_df)[0]
     status_text = STATUS_MAP.get(prediction, "DESCONHECIDO")
    
@@ -252,3 +264,43 @@ def exportar_relatorio_pet(pet_id: int, tipo: str):
 def obter_recomendacao_pet(dados: dict):
     resultado = RecommendationService.gerar_recomendacao(dados)
     return resultado
+
+from api.services.report_service import ReportService
+
+@app.get("/api/ai/pets/{pet_id}/insights")
+async def get_pet_insights_get(pet_id: str):
+    return {
+        "pet_id": pet_id,
+        "status_analise": "Normal",
+        "insights": "Comportamento dentro da normalidade para o histórico recente do pet."
+    }
+
+@app.get("/api/ai/pets/{pet_id}/analysis")
+async def get_pet_analysis_get(pet_id: str):
+    resultado_padrao = RecommendationService.gerar_recomendacao({
+        "atividade_diaria_pct": 75,
+        "peso_variacao_pct": 0,
+        "sono_status": "estável"
+    })
+    return {
+        "pet_id": pet_id,
+        "analise_comportamental": resultado_padrao
+    }
+
+@app.get("/api/ai/pets/{pet_id}/report")
+async def get_pet_report_get(pet_id: str):
+    relatorio_base = ReportService.gerar_relatorio(pet_id, "semanal")
+    return {
+        "pet_id": pet_id,
+        "periodo": "semanal",
+        "relatorio": relatorio_base
+    }
+
+@app.get("/api/ai/pets/{pet_id}/trends")
+async def get_pet_trends_get(pet_id: str):
+    return {
+        "pet_id": pet_id,
+        "tendencia_atividade": "Estável",
+        "tendencia_sono": "Regular",
+        "historico_analisado": [15.0, 18.0, 16.0, 15.0]
+    }
