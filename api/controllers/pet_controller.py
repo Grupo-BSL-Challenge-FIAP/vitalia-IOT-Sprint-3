@@ -12,12 +12,15 @@ import os
 
 router = APIRouter(prefix="/api/ai/pets", tags=["Pets AI"])
 
-# Carregamento do modelo ML
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_rf_model.pkl')
+SCALER_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/scaler.pkl') # Certifique-se de que o scaler foi salvo aqui
+
 try:
     model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
 except Exception:
     model = None
+    scaler = None
 
 STATUS_MAP = {0: "NORMAL", 1: "ATENÇÃO", 2: "ALERTA"}
 
@@ -33,13 +36,11 @@ async def get_pet_dashboard(pet_id: str, payload: DashboardInput):
         status_geral = "NORMAL"
         reducao_pct = 0.0
 
-        # Regra de negócio do Backlog: Queda de atividade
         if atividade_atual < media_ativ and media_ativ > 0:
             reducao_pct = ((media_ativ - atividade_atual) / media_ativ) * 100
             if reducao_pct >= 30.0:
                 status_geral = "ATENÇÃO"
-                
-        # Alerta extremo de segurança
+
         if media_ativ < 20 or media_sono > 90:
             status_geral = "ALERTA"
 
@@ -63,12 +64,28 @@ async def predict_pet_status(pet_id: str, data: PetDataInput):
     if not model:
         raise HTTPException(status_code=500, detail="Modelo de IA não carregado.")
     
+    # Cria o DataFrame com as 5 features que o scaler espera
     features_df = pd.DataFrame([{
-        "atividade": data.atividade_diaria_pct,
-        "peso_var": data.peso_kg,
-        "sono": 1 if data.sono_diario_pct > 50 else 0
+        "idade_anos": data.idade_anos,
+        "peso_kg": data.peso_kg,
+        "atividade_diaria_pct": data.atividade_diaria_pct,
+        "sono_diario_pct": data.sono_diario_pct,
+        "consumo_agua_ml": data.consumo_agua_ml
     }])
-    prediction = model.predict(features_df)[0]
+    
+    # Aplica o scaler nas 5 features e filtra as 3 colunas que o modelo espera
+    if scaler:
+        features_transformadas = scaler.transform(features_df)
+        # Seleciona as 3 colunas principais correspondentes (atividade, peso e sono)
+        features_modelo = features_transformadas[:, [2, 1, 3]]
+        prediction = model.predict(features_modelo)[0]
+    else:
+        features_simples = pd.DataFrame([{
+            "atividade": data.atividade_diaria_pct,
+            "peso_var": data.peso_kg,
+            "sono": 1 if data.sono_diario_pct > 50 else 0
+        }])
+        prediction = model.predict(features_simples)[0]
     status_text = STATUS_MAP.get(prediction, "DESCONHECIDO")
    
     fatores_explicacao = []
@@ -107,6 +124,12 @@ async def get_pet_recommendations(pet_id: str, payload: RecommendationInput):
             recomendacoes.append({"categoria": "Atividade Física", "acao": "Introduzir brincadeiras interativas de curta duração", "justificativa": f"A atividade diária registrou apenas {d.atividade_diaria_pct}%."})
         if d.sono_diario_pct > 90:
             recomendacoes.append({"categoria": "Bem-estar e Descanso", "acao": "Monitorar sinais de apatia contínua", "justificativa": f"O tempo de sono esteve elevado em {d.sono_diario_pct}%."})
+        if d.atividade_diaria_pct < 50:
+            recomendacoes.append({
+                "categoria": "Atividade Física", 
+                "acao": "Acompanhar o nível de atividade do pet nos próximos dias.", 
+                "justificativa": "Atividade abaixo da média histórica esperada."
+            })
         if d.consumo_agua_ml < 250:
             recomendacoes.append({"categoria": "Hidratação", "acao": "Espalhar mais potes de água pela casa", "justificativa": f"Consumo hídrico registrando {d.consumo_agua_ml} ml."})
             
