@@ -65,6 +65,9 @@ Limpeza de valores nulos, normalização de escalas numéricas e mapeamento/conv
 ### Algoritmo escolhido & Justificativa
 Modelos de Machine Learning baseados em classificação e regressão (como Random Forest / Regressão Linear), escolhidos pela alta interpretabilidade, eficiência computacional e precisão em dados tabulares de telemetria.
 
+### Modelo de Regressão (Previsão de Peso)
+> **Aviso Importante:** A previsão de peso atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.
+
 ### Treinamento, Métricas & Resultados
 Treinamento realizado via scripts dedicados com validação cruzada. Métricas de regressão/classificação validadas (como acurácia, erro e matriz de confusão) demonstrando alta confiabilidade nas previsões.
 
