@@ -76,3 +76,5 @@ O modelo depende da regularidade dos dados coletados pelos dispositivos IoT; var
 
 ### Arquitetura, Fluxo de integração & Estratégia de deploy
 Arquitetura em microsserviço com FastAPI (api/main.py), conteinerizada via Docker, protegida por chave de API (x-api-key) e variáveis de ambiente (.env), integrando o Frontend/Backend diretamente ao motor de IA.
+> **Aviso Importante sobre os Dados IoT:**
+> Atualmente a Vitalia AI utiliza dados simulados para representar as informações que futuramente serão fornecidas pelo dispositivo IoT. A integração com o dispositivo será realizada posteriormente, quando o hardware estiver disponível.
