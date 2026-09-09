@@ -6,3 +6,7 @@ numpy
 scikit-learn
 joblib
 pytest
+google-genai
+python-dotenv
+matplotlib
+httpx
