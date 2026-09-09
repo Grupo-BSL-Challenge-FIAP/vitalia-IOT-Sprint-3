@@ -9,11 +9,12 @@ from api.services.llm_service import generate_pet_insight
 import pandas as pd
 import joblib
 import os
+from api.security import verificar_autenticacao
 
 router = APIRouter(prefix="/api/ai/pets", tags=["Pets AI"])
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_rf_model.pkl')
-SCALER_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/scaler.pkl') # Certifique-se de que o scaler foi salvo aqui
+SCALER_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/scaler.pkl') 
 
 try:
     model = joblib.load(MODEL_PATH)
@@ -64,7 +65,6 @@ async def predict_pet_status(pet_id: str, data: PetDataInput):
     if not model:
         raise HTTPException(status_code=500, detail="Modelo de IA não carregado.")
     
-    # Cria o DataFrame com as 5 features que o scaler espera
     features_df = pd.DataFrame([{
         "idade_anos": data.idade_anos,
         "peso_kg": data.peso_kg,
@@ -73,10 +73,8 @@ async def predict_pet_status(pet_id: str, data: PetDataInput):
         "consumo_agua_ml": data.consumo_agua_ml
     }])
     
-    # Aplica o scaler nas 5 features e filtra as 3 colunas que o modelo espera
     if scaler:
         features_transformadas = scaler.transform(features_df)
-        # Seleciona as 3 colunas principais correspondentes (atividade, peso e sono)
         features_modelo = features_transformadas[:, [2, 1, 3]]
         prediction = model.predict(features_modelo)[0]
     else:

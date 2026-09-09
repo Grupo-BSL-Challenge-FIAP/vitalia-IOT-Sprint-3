@@ -1,8 +1,10 @@
 from google import genai
+
+from google import genai
 import os
 
-# Configura a chave diretamente no ambiente para o SDK novo reconhecer
-os.environ["GEMINI_API_KEY"] = "AQ.Ab8RN6L7rbTiIWKBurqyrKghqRoN8xqDAfDi4I4wGDmCrTvOig"
+# Configuração correta utilizando variável de ambiente
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 def generate_pet_insight(dados_pet: dict, status_ml: str) -> str:
     try:
