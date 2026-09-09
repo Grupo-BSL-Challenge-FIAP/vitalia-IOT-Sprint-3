@@ -1,13 +1,27 @@
 import pandas as pd
 import numpy as np
 import os
+from datetime import datetime, timedelta
 
 def generate_synthetic_data(filepath: str, num_records: int = 2000):
-    """Gera dados simulados de comportamento e saúde de pets para o MVP."""
+    """Gera dados simulados de comportamento e saúde de pets com histórico temporal para o MVP."""
     np.random.seed(42)
     
+    pet_ids = np.random.randint(1000, 1100, num_records)
+    
+    datas_base = []
+    pet_counters = {}
+    
+    for pid in pet_ids:
+        if pid not in pet_counters:
+            pet_counters[pid] = datetime.now() - timedelta(days=np.random.randint(10, 30))
+        else:
+            pet_counters[pid] += timedelta(days=np.random.randint(1, 3))
+        datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
+
     data = {
-        'pet_id': np.random.randint(1000, 1100, num_records),
+        'pet_id': pet_ids,
+        'data': datas_base,
         'idade_anos': np.random.uniform(0.5, 15, num_records).round(1),
         'peso_kg': (5.0 + np.random.uniform(0.5, 3.0, num_records) * np.random.uniform(0.8, 1.5, num_records)).round(2),
         'atividade_diaria_pct': np.random.normal(70, 20, num_records).clip(0, 100).round(1),
@@ -29,29 +43,26 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     df.to_csv(filepath, index=False)
-    print(f"[OK] Dataset bruto gerado em: {filepath}")
+    print(f"[OK] Dataset bruto com histórico gerado em: {filepath}")
     return df
 
 def preprocess_data(raw_filepath: str, processed_filepath: str):
-    """Limpa, trata valores nulos e prepara o dataset final."""
-    print("Iniciando pré-processamento...")
+    """Limpa, trata valores nulos, mantém o pet_id e a data para formar o histórico temporal."""
+    print("Iniciando pré-processamento com histórico temporal...")
     df = pd.read_csv(raw_filepath)
     
     df['peso_kg'] = df['peso_kg'].fillna(df['peso_kg'].median())
-    
     df = df.drop_duplicates()
     
-    features = ['idade_anos', 'peso_kg', 'atividade_diaria_pct', 'sono_diario_pct', 'consumo_agua_ml']
-    X = df[features]
-    y = df['status']
+    df['data'] = pd.to_datetime(df['data'])
+    df = df.sort_values(by=['pet_id', 'data'])
+    df['data'] = df['data'].dt.strftime('%Y-%m-%d')
     
-
     os.makedirs(os.path.dirname(processed_filepath), exist_ok=True)
-    dataset_final = pd.concat([X, y], axis=1)
-    dataset_final.to_csv(processed_filepath, index=False)
+    df.to_csv(processed_filepath, index=False)
     
-    print(f"[OK] Dataset limpo e processado salvo em: {processed_filepath}")
-    return X, y
+    print(f"[OK] Dataset processado com histórico salvo em: {processed_filepath}")
+    return df
 
 if __name__ == "__main__":
     RAW_PATH = "data/raw/pets_raw_data.csv"
