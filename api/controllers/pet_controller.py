@@ -174,3 +174,26 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput):
     predicao = pipeline.predict(df_entrada)
     
     return {"pet_id": pet_id, "predicao": int(predicao[0])}
+
+
+@router.get("/{pet_id}/trends")
+async def obter_tendencia_peso(pet_id: str):
+    """
+    Retorna a tendência de regressão de peso do pet baseada em histórico.
+    Aviso: A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.
+    """
+    regressor_path = "models/trained/vitalia_peso_regressor.pkl"
+    if not os.path.exists(regressor_path):
+        raise HTTPException(status_code=500, detail="Regressor não encontrado.")
+    
+    model = joblib.load(regressor_path)
+    
+    dias_futuros = np.array(range(1, 8)).reshape(-1, 1)
+    previsoes = model.predict(dias_futuros)
+    
+    return {
+        "pet_id": pet_id,
+        "aviso": "A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.",
+        "historico_dias": [int(d) for d in dias_futuros.flatten()],
+        "peso_projetado_kg": [round(float(p), 2) for p in previsoes]
+    }
