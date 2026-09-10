@@ -1,19 +1,45 @@
 import os
-import joblib
+import json
 import pandas as pd
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+import joblib
 
-def avaliar_modelo():
+PIPELINE_PATH = "models/trained/vitalia_pipeline.pkl"
+DATA_PATH = "data/processed/pets_dataset_ready.csv"
+METRICS_PATH = "models/metrics.json"
 
-    model_path = os.path.join(os.path.dirname(__file__), "..", "models", "trained", "vitalia_peso_regressor.pkl")
-    test_data_path = os.path.join(os.path.dirname(__file__), "dados_teste.csv") # Ajuste conforme seu dataset
+if not os.path.exists(PIPELINE_PATH):
+    raise FileNotFoundError(f"Pipeline não encontrado em {PIPELINE_PATH}.")
 
-    if not os.path.exists(model_path):
-        print(f"Modelo não encontrado em: {model_path}. Execute o training.py primeiro.")
-        return
+if not os.path.exists(DATA_PATH):
+    raise FileNotFoundError(f"Dataset não encontrado em {DATA_PATH}.")
 
-    model = joblib.load(model_path)
-    print("Modelo carregado com sucesso para avaliação.")
+pipeline = joblib.load(PIPELINE_PATH)
 
-if __name__ == "__main__":
-    avaliar_modelo()
+df = pd.read_csv(DATA_PATH)
+features = ["peso_kg", "atividade_diaria_pct", "sono_diario_pct", "consumo_agua_ml"]
+target = "status"
+
+X = df[features]
+y = df[target]
+
+_, X_test, _, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+y_pred = pipeline.predict(X_test)
+
+metrics = {
+    "accuracy": float(accuracy_score(y_test, y_pred)),
+    "precision_macro": float(precision_score(y_test, y_pred, average="macro", zero_division=0)),
+    "recall_macro": float(recall_score(y_test, y_pred, average="macro", zero_division=0)),
+    "f1_macro": float(f1_score(y_test, y_pred, average="macro", zero_division=0)),
+    "confusion_matrix": confusion_matrix(y_test, y_pred).tolist()
+}
+
+os.makedirs(os.path.dirname(METRICS_PATH), exist_ok=True)
+with open(METRICS_PATH, "w", encoding="utf-8") as f:
+    json.dump(metrics, f, indent=4, ensure_ascii=False)
+
+print(f"Métricas salvas com sucesso em {METRICS_PATH}!")

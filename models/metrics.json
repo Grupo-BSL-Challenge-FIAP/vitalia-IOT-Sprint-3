@@ -1,14 +1,23 @@
 {
-  "modelo": "Random Forest",
-  "metricas": {
-    "accuracy": 0.78,
-    "precision": 0.40,
-    "recall": 0.25,
-    "f1_score": 0.31
-  },
-  "matriz_confusao": [
-    [29, 3],
-    [6, 2]
-  ],
-  "observacao": "Métricas geradas a partir do script avaliar_modelo_completo.py com dados simulados."
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0,
+    "confusion_matrix": [
+        [
+            278,
+            0,
+            0
+        ],
+        [
+            0,
+            92,
+            0
+        ],
+        [
+            0,
+            0,
+            30
+        ]
+    ]
 }
