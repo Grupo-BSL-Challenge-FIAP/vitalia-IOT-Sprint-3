@@ -15,6 +15,10 @@ from api.services.analysis_service import AnalysisService
 
 from api.services.history_service import HistoryService
 
+import os
+import joblib
+import pandas as pd
+
 router = APIRouter(prefix="/api/ai/pets", tags=["Pets AI"])
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_rf_model.pkl')
@@ -26,6 +30,13 @@ try:
 except Exception:
     model = None
     scaler = None
+    
+PIPELINE_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_pipeline.pkl')
+
+try:
+    pipeline = joblib.load(PIPELINE_PATH)
+except Exception:
+    pipeline = None
 
 STATUS_MAP = {0: "NORMAL", 1: "ATENÇÃO", 2: "ALERTA"}
 
@@ -147,3 +158,19 @@ async def get_pet_recommendations(pet_id: str):
         "total_recomendacoes": len(recomendacoes),
         "recomendacoes": recomendacoes
     }
+    
+@router.post("/{pet_id}/predict")
+async def prever_comportamento(pet_id: str, dados_pet: PetDataInput):
+    if not pipeline:
+        raise HTTPException(status_code=500, detail="Pipeline ML não carregado.")
+        
+    df_entrada = pd.DataFrame([{
+        "peso_kg": dados_pet.peso_kg,
+        "atividade_diaria_pct": dados_pet.atividade_diaria_pct,
+        "sono_diario_pct": dados_pet.sono_diario_pct,
+        "consumo_agua_ml": dados_pet.consumo_agua_ml
+    }])
+    
+    predicao = pipeline.predict(df_entrada)
+    
+    return {"pet_id": pet_id, "predicao": int(predicao[0])}
