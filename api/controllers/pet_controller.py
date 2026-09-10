@@ -1,28 +1,25 @@
+import os
+import joblib
+import pandas as pd
+import numpy as np
 from fastapi import APIRouter, HTTPException
+
 from api.schemas.pet_schemas import (
     PetDataInput, QuestionInput, ReportInput, 
     DashboardInput, RecommendationInput, InsightOutput
 )
 from api.services.report_service import ReportService
 from api.services.recommendation_service import RecommendationService
-from api.services.llm_service import generate_pet_insight
-import pandas as pd
-import joblib
-import os
-from api.security import verificar_autenticacao
-    
 from api.services.analysis_service import AnalysisService
-
 from api.services.history_service import HistoryService
-
-import os
-import joblib
-import pandas as pd
+from api.services.llm_service import llm_service
+from api.security import verificar_autenticacao
 
 router = APIRouter(prefix="/api/ai/pets", tags=["Pets AI"])
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_rf_model.pkl')
 SCALER_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/scaler.pkl') 
+PIPELINE_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_pipeline.pkl')
 
 try:
     model = joblib.load(MODEL_PATH)
@@ -31,8 +28,6 @@ except Exception:
     model = None
     scaler = None
     
-PIPELINE_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_pipeline.pkl')
-
 try:
     pipeline = joblib.load(PIPELINE_PATH)
 except Exception:
@@ -40,9 +35,8 @@ except Exception:
 
 STATUS_MAP = {0: "NORMAL", 1: "ATENÇÃO", 2: "ALERTA"}
 
-from api.services.history_service import HistoryService
-
 history_service = HistoryService()
+analysis_service = AnalysisService()
 
 @router.get("/{pet_id}/insights")
 async def get_pet_insights_get(pet_id: str):
@@ -73,7 +67,11 @@ async def get_pet_insights_get(pet_id: str):
     }
 
 @router.get("/{pet_id}/trends")
-async def get_pet_trends_get(pet_id: str):
+async def get_pet_trends(pet_id: str):
+    """
+    Retorna tendências históricas e projeção de regressão de peso.
+    Aviso: A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.
+    """
     try:
         pid_int = int(pet_id)
     except ValueError:
@@ -82,18 +80,26 @@ async def get_pet_trends_get(pet_id: str):
     tendencias = history_service.calcular_tendencias(pid_int)
     medias = history_service.calcular_medias_historicas(pid_int)
     
-    if "tendencia" in tendencias:
-        raise HTTPException(status_code=404, detail="Dados insuficientes para calcular tendências.")
-        
+    regressor_path = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_peso_regressor.pkl')
+    historico_dias = []
+    peso_projetado = []
+    
+    if os.path.exists(regressor_path):
+        regressor = joblib.load(regressor_path)
+        dias_futuros = np.array(range(1, 8)).reshape(-1, 1)
+        previsoes = regressor.predict(dias_futuros)
+        historico_dias = [int(d) for d in dias_futuros.flatten()]
+        peso_projetado = [round(float(p), 2) for p in previsoes]
+
     return {
         "pet_id": pet_id,
-        "tendencia_peso": tendencias["tendenciaPeso"],
-        "variacao_peso": tendencias["variacaoPeso"],
+        "tendencia_peso": tendencias.get("tendenciaPeso"),
+        "variacao_peso": tendencias.get("variacaoPeso"),
         "media_historica_peso": medias.get("mediaPesoKg"),
-        "historico_recente_peso": [tendencias["registroAnterior"], tendencias["registroAtual"]]
+        "aviso": "A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.",
+        "historico_dias": historico_dias,
+        "peso_projetado_kg": peso_projetado
     }
-
-analysis_service = AnalysisService()
 
 @router.get("/{pet_id}/dashboard")
 async def get_pet_dashboard(pet_id: str):
@@ -175,56 +181,16 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput):
     
     return {"pet_id": pet_id, "predicao": int(predicao[0])}
 
-
-@router.get("/{pet_id}/trends")
-async def obter_tendencia_peso(pet_id: str):
-    """
-    Retorna a tendência de regressão de peso do pet baseada em histórico.
-    Aviso: A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.
-    """
-    regressor_path = "models/trained/vitalia_peso_regressor.pkl"
-    if not os.path.exists(regressor_path):
-        raise HTTPException(status_code=500, detail="Regressor não encontrado.")
-    
-    model = joblib.load(regressor_path)
-    
-    dias_futuros = np.array(range(1, 8)).reshape(-1, 1)
-    previsoes = model.predict(dias_futuros)
-    
-    return {
-        "pet_id": pet_id,
-        "aviso": "A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.",
-        "historico_dias": [int(d) for d in dias_futuros.flatten()],
-        "peso_projetado_kg": [round(float(p), 2) for p in previsoes]
+@router.post("/{pet_id}/ask")
+async def perguntar_ao_pet(pet_id: str, pergunta: str):
+    contexto = {
+        "identificacao": f"Pet ID: {pet_id}",
+        "dados_atuais": "Peso: 12kg, Atividade: 52%",
+        "medias_historicas": "Média de atividade: 69.7%",
+        "tendencia": "Estável com leve queda",
+        "classificacao_ml": "ATENÇÃO",
+        "alteracoes_encontradas": "Queda de 40.3% na atividade comparada ao histórico."
     }
     
-def gerar_recomendacao_com_historico(pet_id: str, valor_atual: float, historico_valores: list):
-    """
-    Calcula a média histórica do pet, compara com o valor atual,
-    determina a variação e gera uma recomendação com justificativa numérica.
-    """
-    if not historico_valores:
-        return {
-            "historico_medio": None,
-            "atual": valor_atual,
-            "variacao_pct": None,
-            "recomendacao": "Dados históricos insuficientes para comparação."
-        }
-    
-    media_historica = sum(historico_valores) / len(historico_valores)
-    variacao_pct = ((valor_atual - media_historica) / media_historica) * 100
-    
-    # Lógica de recomendação baseada na variação
-    if variacao_pct < -20:
-        recomendacao = f"Atividade abaixo da média histórica esperada. Histórico: {round(media_historica, 1)}%, Atual: {round(valor_atual, 1)}%, Variação: {round(variacao_pct, 1)}%. Acompanhar o nível de atividade do pet nos próximos dias."
-    elif variacao_pct > 20:
-        recomendacao = f"Atividade acima da média histórica. Histórico: {round(media_historica, 1)}%, Atual: {round(valor_atual, 1)}%, Variação: {round(variacao_pct, 1)}%."
-    else:
-        recomendacao = f"Métricas dentro da normalidade comparadas ao histórico de {round(media_historica, 1)}%."
-        
-    return {
-        "historico_medio": round(media_historica, 2),
-        "atual": valor_atual,
-        "variacao_pct": round(variacao_pct, 2),
-        "recomendacao": recomendacao
-    }
+    resposta = llm_service.answer(contexto, pergunta)
+    return {"pet_id": pet_id, "resposta": resposta}

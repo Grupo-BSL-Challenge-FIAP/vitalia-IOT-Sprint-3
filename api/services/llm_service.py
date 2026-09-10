@@ -1,39 +1,37 @@
-from google import genai
-
-from google import genai
 import os
+from google import genai
+from dotenv import load_dotenv
 
-# Configuração correta utilizando variável de ambiente
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+load_dotenv()
 
-def generate_pet_insight(dados_pet: dict, status_ml: str) -> str:
-    try:
-        # Inicializa o client sem parâmetros, pois ele lê do os.environ
-        client = genai.Client()
-        
+class LLMService:
+    def __init__(self):
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY não encontrada nas variáveis de ambiente ou arquivo .env.")
+        self.client = genai.Client(api_key=api_key)
+
+    def answer(self, context: dict, question: str) -> str:
         prompt = f"""
-        Você é a Vitalia AI, uma assistente virtual de acompanhamento pet.
-        Explique os dados deste pet para o tutor de forma amigável e objetiva, sem diagnósticos médicos.
-        
-        Dados:
-        - Idade: {dados_pet['idade_anos']} anos
-        - Peso: {dados_pet['peso_kg']} kg
-        - Atividade: {dados_pet['atividade_diaria_pct']}%
-        - Sono: {dados_pet['sono_diario_pct']}%
-        - Água: {dados_pet['consumo_agua_ml']} ml
-        - Status do modelo: {status_ml}
-        
-        Escreva um parágrafo curto de até 3 frases.
+        Com base estritamente nos dados estruturados do pet abaixo, responda à pergunta do usuário.
+        Não invente informações que não estejam presentes no contexto.
+
+        --- CONTEXTO ESTRUTURADO ---
+        - Identificação: {context.get('identificacao')}
+        - Dados Atuais: {context.get('dados_atuais')}
+        - Médias Históricas: {context.get('medias_historicas')}
+        - Tendência: {context.get('tendencia')}
+        - Classificação ML: {context.get('classificacao_ml')}
+        - Alterações Encontradas: {context.get('alteracoes_encontradas')}
+        ----------------------------
+
+        Pergunta: {question}
         """
-        
-        response = client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=prompt,
+
+        response = self.client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
         )
-        return response.text.strip()
-        
-    except Exception as e:
-        print(f"ERRO REAL DO GEMINI: {str(e)}")
-        if status_ml == "NORMAL":
-            return "O comportamento do pet está dentro do padrão histórico normal."
-        return "Notamos variações nos padrões do pet. Recomendamos atenção aos dados."
+        return response.text
+
+llm_service = LLMService()
