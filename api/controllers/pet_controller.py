@@ -197,3 +197,34 @@ async def obter_tendencia_peso(pet_id: str):
         "historico_dias": [int(d) for d in dias_futuros.flatten()],
         "peso_projetado_kg": [round(float(p), 2) for p in previsoes]
     }
+    
+def gerar_recomendacao_com_historico(pet_id: str, valor_atual: float, historico_valores: list):
+    """
+    Calcula a média histórica do pet, compara com o valor atual,
+    determina a variação e gera uma recomendação com justificativa numérica.
+    """
+    if not historico_valores:
+        return {
+            "historico_medio": None,
+            "atual": valor_atual,
+            "variacao_pct": None,
+            "recomendacao": "Dados históricos insuficientes para comparação."
+        }
+    
+    media_historica = sum(historico_valores) / len(historico_valores)
+    variacao_pct = ((valor_atual - media_historica) / media_historica) * 100
+    
+    # Lógica de recomendação baseada na variação
+    if variacao_pct < -20:
+        recomendacao = f"Atividade abaixo da média histórica esperada. Histórico: {round(media_historica, 1)}%, Atual: {round(valor_atual, 1)}%, Variação: {round(variacao_pct, 1)}%. Acompanhar o nível de atividade do pet nos próximos dias."
+    elif variacao_pct > 20:
+        recomendacao = f"Atividade acima da média histórica. Histórico: {round(media_historica, 1)}%, Atual: {round(valor_atual, 1)}%, Variação: {round(variacao_pct, 1)}%."
+    else:
+        recomendacao = f"Métricas dentro da normalidade comparadas ao histórico de {round(media_historica, 1)}%."
+        
+    return {
+        "historico_medio": round(media_historica, 2),
+        "atual": valor_atual,
+        "variacao_pct": round(variacao_pct, 2),
+        "recomendacao": recomendacao
+    }
