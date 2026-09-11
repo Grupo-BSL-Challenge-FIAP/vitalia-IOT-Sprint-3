@@ -17,21 +17,13 @@ from api.security import verificar_autenticacao
 
 router = APIRouter(prefix="/api/ai/pets", tags=["Pets AI"])
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_rf_model.pkl')
-SCALER_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/scaler.pkl') 
 PIPELINE_PATH = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_pipeline.pkl')
 
-try:
-    model = joblib.load(MODEL_PATH)
-    scaler = joblib.load(SCALER_PATH)
-except Exception:
-    model = None
-    scaler = None
-    
 try:
     pipeline = joblib.load(PIPELINE_PATH)
 except Exception:
     pipeline = None
+     
 
 STATUS_MAP = {0: "NORMAL", 1: "ATENÇÃO", 2: "ALERTA"}
 
