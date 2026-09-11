@@ -183,13 +183,29 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput):
 
 @router.post("/{pet_id}/ask")
 async def perguntar_ao_pet(pet_id: str, pergunta: str):
+    try:
+        pid_int = int(pet_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="ID inválido.")
+        
+
+    ultimo = history_service.obter_ultimo_registro(pid_int)
+    if not ultimo:
+        raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
+        
+    medias = history_service.calcular_medias_historicas(pid_int)
+    
+    tendencias = history_service.calcular_tendencias(pid_int)
+
+    resultado_analise = analysis_service.analisar_comportamento(pid_int)
+    
     contexto = {
         "identificacao": f"Pet ID: {pet_id}",
-        "dados_atuais": "Peso: 12kg, Atividade: 52%",
-        "medias_historicas": "Média de atividade: 69.7%",
-        "tendencia": "Estável com leve queda",
-        "classificacao_ml": "ATENÇÃO",
-        "alteracoes_encontradas": "Queda de 40.3% na atividade comparada ao histórico."
+        "dados_atuais": f"Peso: {ultimo.get('pesoKg')}kg, Atividade: {ultimo.get('atividadePct')}%, Sono: {ultimo.get('sonoPct')}%",
+        "medias_historicas": f"Média de atividade: {medias.get('mediaAtividadePct')}%, Média de peso: {medias.get('mediaPesoKg')}kg",
+        "tendencia": f"Tendência de peso: {tendencias.get('tendenciaPeso')} (Variação: {tendencias.get('variacaoPeso')}%)",
+        "classificacao_ml": resultado_analise.get("status"),
+        "alteracoes_encontradas": resultado_analise.get("justificativaNumerica")
     }
     
     resposta = llm_service.answer(contexto, pergunta)

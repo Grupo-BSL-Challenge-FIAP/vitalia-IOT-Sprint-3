@@ -149,3 +149,19 @@ def test_regressao_peso():
     data = response.json()
     assert "peso_projetado_kg" in data
     assert isinstance(data["peso_projetado_kg"], list)
+    
+def test_ask_pet_dinamico():
+    
+    with patch("api.controllers.pet_controller.llm_service") as mock_llm:
+        mock_llm.answer.return_value = "Resposta personalizada baseada no histórico do pet."
+        
+        payload = {"pergunta": "Como está a saúde do pet?"}
+        response = client.post("/api/ai/pets/1000/ask?pergunta=Como%20está%20a%20saúde%20do%20pet?", headers=HEADERS)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["pet_id"] == "1000"
+        assert "resposta" in data
+
+def test_ask_pet_inexistente():
+    response = client.post("/api/ai/pets/9999/ask?pergunta=Tudo%20bem?", headers=HEADERS)
+    assert response.status_code == 404
