@@ -46,17 +46,17 @@ A **Vitalia AI** é uma API desenvolvida em FastAPI que une Machine Learning (Ra
 Falta de monitoramento preditivo e automatizado do bem-estar de pets, dificultando a detecção precoce de quedas de atividade e problemas de saúde pelos tutores ou clínicas veterinárias.
 
 ### 2. Objetivo da IA
-Desenvolver um modelo preditivo capaz de analisar dados de telemetria e hábitos dos animais, gerando alertas precoces e insights explicáveis para otimizar os cuidados veterinários[cite: 4].
+Desenvolver um modelo preditivo capaz de analisar dados de telemetria e hábitos dos animais, gerando alertas precoces e insights explicáveis para otimizar os cuidados veterinários.
 
 ### 3. Usuários Beneficiados
-Tutores de pets, equipes veterinárias e plataformas de gestão de saúde animal[cite: 4].
+Tutores de pets, equipes veterinárias e plataformas de gestão de saúde animal.
 
 ### 4. Dados Utilizados & Origem dos Dados
-Registros históricos de monitoramento, peso, métricas de atividade diária, padrão de sono e consumo de água gerados por simulações do sistema[cite: 4].
+Registros históricos de monitoramento, peso, métricas de atividade diária, padrão de sono e consumo de água gerados por simulações do sistema.
 
 ### 5. Informação Destacada sobre IoT Simulado & Formato do Mock
 > **⚠️ Aviso Importante sobre IoT:** 
-> Atualmente a Vitalia AI **utiliza dados simulados** para representar as informações que futuramente serão coletadas por dispositivos IoT[cite: 4].
+> Atualmente a Vitalia AI **utiliza dados simulados** para representar as informações que futuramente serão coletadas por dispositivos IoT.
 > **Formato do Mock de Entrada (Exemplo JSON):**
 > ```json
 > {
@@ -72,29 +72,29 @@ Registros históricos de monitoramento, peso, métricas de atividade diária, pa
 O histórico e as médias comportamentais dos pets são gerados e consultados através dos serviços internos de dados (`HistoryService`) que mapeiam o ID do pet para simular a telemetria anterior.
 
 ### 7. Features Utilizadas
-* Atividade diária e histórico de monitoramento[cite: 4].
-* Variação de peso (`peso_kg` mapeado para o modelo)[cite: 4].
-* Padrão de sono e indicadores comportamentais[cite: 4].
+* Atividade diária e histórico de monitoramento.
+* Variação de peso (`peso_kg` mapeado para o modelo).
+* Padrão de sono e indicadores comportamentais.
 
 ### 8. Tratamento dos Dados
-Limpeza de valores nulos, normalização de escalas numéricas e mapeamento de features para compatibilidade com o pipeline de machine learning[cite: 4].
+Limpeza de valores nulos, normalização de escalas numéricas e mapeamento de features para compatibilidade com o pipeline de machine learning.
 
 ### 9. Modelo Selecionado & Justificativa
-* **Modelo:** Random Forest (`vitalia_rf_model.pkl` e `scaler.pkl`)[cite: 4].
-* **Justificativa:** Escolhido pela alta interpretabilidade, eficiência computacional e precisão robusta em dados tabulares de telemetria[cite: 4].
+* **Modelo:** Random Forest (`vitalia_rf_model.pkl` e `scaler.pkl`).
+* **Justificativa:** Escolhido pela alta interpretabilidade, eficiência computacional e precisão robusta em dados tabulares de telemetria.
 
 ### 10. Métricas Reais & Regressão Simulada
 * **Métricas de Classificação:** Validadas com base em acurácia e validação cruzada nos scripts de treino.
-* **Regressão de Peso:** Utiliza um regressor linear (`vitalia_peso_regressor.pkl`) para projeção futura baseada em dias simulados[cite: 4].
+* **Regressão de Peso:** Utiliza um regressor linear (`vitalia_peso_regressor.pkl`) para projeção futura baseada em dias simulados.
 
 ### 11. Integração com Google Gemini (Gemini)
-Integração via Google GenAI SDK (`google-genai`) utilizando o modelo Gemini para traduzir análises de comportamento em recomendações de texto e respostas de Q&A humanizadas[cite: 4].
+Integração via Google GenAI SDK (`google-genai`) utilizando o modelo Gemini para traduzir análises de comportamento em recomendações de texto e respostas de Q&A humanizadas.
 
 ### 12. Limitações
-O modelo depende da consistência dos dados numéricos fornecidos nas requisições; variações drásticas nos inputs podem exigir recalibragem do pipeline[cite: 4].
+O modelo depende da consistência dos dados numéricos fornecidos nas requisições; variações drásticas nos inputs podem exigir recalibragem do pipeline.
 
 ### 13. Arquitetura
-Arquitetura modular em microsserviço estruturada em camadas: `controllers` (rotas FastAPI), `services` (regras de negócio, ML e LLM) e `schemas` (validação com Pydantic)[cite: 4].
+Arquitetura modular em microsserviço estruturada em camadas: `controllers` (rotas FastAPI), `services` (regras de negócio, ML e LLM) e `schemas` (validação com Pydantic).
 
 ### 14. Variáveis de Ambiente (.env)
 Para rodar a aplicação, crie um arquivo `.env` na raiz com a chave:
@@ -114,6 +114,10 @@ uvicorn api.main:app --reload
 Execução da Suíte de Testes (Pytest):
 ```bash
 pytest
+```
+
+### 16. Nota sobre as Métricas e Desempenho:
+Os resultados obtidos representam o desempenho do modelo sobre dados simulados utilizados para validação técnica do MVP e não representam validação clínica ou desempenho em dados reais.
 ```
 
 ### Acesso à Documentação (Swagger)
