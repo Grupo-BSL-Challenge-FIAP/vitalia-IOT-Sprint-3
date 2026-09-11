@@ -165,3 +165,11 @@ def test_ask_pet_dinamico():
 def test_ask_pet_inexistente():
     response = client.post("/api/ai/pets/9999/ask?pergunta=Tudo%20bem?", headers=HEADERS)
     assert response.status_code == 404
+    
+    
+def test_insights_unificado_com_analysis():
+    response = client.get("/api/ai/pets/1000/insights", headers=HEADERS)
+    assert response.status_code == 200
+    data = response.json()
+    assert "status_analise" in data
+    assert data["status_analise"] in ["NORMAL", "ATENÇÃO", "ALERTA"]

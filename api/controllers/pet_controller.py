@@ -45,19 +45,13 @@ async def get_pet_insights_get(pet_id: str):
     except ValueError:
         raise HTTPException(status_code=400, detail="ID do pet inválido.")
         
-    ultimo = history_service.obter_ultimo_registro(pid_int)
-    if not ultimo:
+    resultado = analysis_service.analisar_comportamento(pid_int)
+    if not resultado:
         raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
     
-    atividade = ultimo["atividadePct"]
-    sono = ultimo["sonoPct"]
-    
-    if atividade < 30 or sono > 85:
-        status_analise = "Alerta"
-        insights = "Comportamento fora da normalidade. Baixa atividade ou excesso de sono detectado."
-    else:
-        status_analise = "Normal"
-        insights = "Comportamento dentro da normalidade com base no histórico recente."
+    status_analise = resultado["status"]
+    insights = resultado.get("justificativaNumerica", "Comportamento analisado com base no histórico recente.")
+    ultimo = history_service.obter_ultimo_registro(pid_int)
         
     return {
         "pet_id": pet_id, 
