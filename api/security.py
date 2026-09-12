@@ -4,7 +4,10 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 
 load_dotenv()
-API_SECRET_KEY = os.getenv("API_SECRET_KEY", "token-secreto-compartilhado-123")
+
+API_SECRET_KEY = os.getenv("API_SECRET_KEY")
+if not API_SECRET_KEY:
+    raise ValueError("A variável de ambiente API_SECRET_KEY não está definida.")
 
 security = HTTPBearer()
 

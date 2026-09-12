@@ -28,7 +28,7 @@ history_service = HistoryService()
 analysis_service = AnalysisService()
 
 @router.get("/{pet_id}/insights")
-async def get_pet_insights_get(pet_id: str):
+async def get_pet_insights_get(pet_id: str, credentials: str = Depends(verificar_autenticacao)):
     try:
         pid_int = int(pet_id)
     except ValueError:
@@ -50,7 +50,7 @@ async def get_pet_insights_get(pet_id: str):
     }
 
 @router.get("/{pet_id}/dashboard")
-async def get_pet_dashboard(pet_id: str):
+async def get_pet_dashboard(pet_id: str, credentials: str = Depends(verificar_autenticacao)):
     try:
         pid_int = int(pet_id)
     except ValueError:
@@ -88,7 +88,7 @@ async def dashboard(pet_id: int, credentials = Depends(verificar_autenticacao)):
     }
 
 @router.get("/{pet_id}/recommendations")
-async def get_pet_recommendations(pet_id: str):
+async def get_pet_recommendations(pet_id: str, credentials: str = Depends(verificar_autenticacao)):
     try:
         pid_int = int(pet_id)
     except ValueError:
@@ -114,7 +114,7 @@ async def get_pet_recommendations(pet_id: str):
     }
     
 @router.post("/{pet_id}/predict")
-async def prever_comportamento(pet_id: str, dados_pet: PetDataInput):
+async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials: str = Depends(verificar_autenticacao)):
     if not pipeline:
         raise HTTPException(status_code=500, detail="Pipeline ML não carregado.")
         
@@ -130,7 +130,7 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput):
     return {"pet_id": pet_id, "predicao": int(predicao[0])}
 
 @router.post("/{pet_id}/ask")
-async def perguntar_ao_pet(pet_id: str, pergunta: str):
+async def perguntar_ao_pet(pet_id: str, pergunta: str, credentials: str = Depends(verificar_autenticacao)):
     try:
         pid_int = int(pet_id)
     except ValueError:

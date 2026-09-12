@@ -3,12 +3,14 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from fastapi.testclient import TestClient
 
+os.environ["API_SECRET_KEY"] = "token-compartilhado-123"
 os.environ["GEMINI_API_KEY"] = "fake-key-para-testes"
 
 from api.main import app
 
 client = TestClient(app)
 HEADERS = {"Authorization": "Bearer token-compartilhado-123"}
+
 VALID_PAYLOAD = {
     "idade_anos": 3.5,
     "peso_kg": 15.0,

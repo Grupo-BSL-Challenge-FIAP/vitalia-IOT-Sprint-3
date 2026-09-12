@@ -12,19 +12,19 @@ from fastapi.responses import JSONResponse
 
 from json import JSONDecodeError
 
+from api.security import verificar_autenticacao
+
 load_dotenv()
 
 ENV = os.getenv("APP_ENV", "development")
 SECRET_KEY = os.getenv("API_SECRET_KEY", "default-secret")
-
-security = HTTPBearer()
 
 app = FastAPI(
     title="Vitalia AI API", 
     description="API de Inteligência Artificial para Pets com LLM", 
     version="1.2",
     swagger_ui_parameters={"persistAuthorization": True},
-    dependencies=[Depends(security)]
+    dependencies=[Depends(verificar_autenticacao)]
 )
 
 app.include_router(pet_router)
