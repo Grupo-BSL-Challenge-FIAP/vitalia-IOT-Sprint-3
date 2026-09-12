@@ -119,15 +119,6 @@ def test_recommendations_geracao():
         
         response = client.get(f"/api/ai/pets/1000/recommendations{QUERY_PARAMS}", headers=HEADERS)
         assert response.status_code == 200
-        
-        
-def test_historico_e_medias():
-
-    response = client.get(f"/api/ai/pets/1000/trends", headers=HEADERS)
-    assert response.status_code == 200
-    data = response.json()
-    assert "media_historica_peso" in data
-    assert "tendencia_peso" in data
 
 def test_machine_learning_predict():
 
@@ -142,13 +133,6 @@ def test_machine_learning_predict():
     assert response.status_code == 200
     assert "predicao" in response.json()
 
-def test_regressao_peso():
-
-    response = client.get(f"/api/ai/pets/1000/trends", headers=HEADERS)
-    assert response.status_code == 200
-    data = response.json()
-    assert "peso_projetado_kg" in data
-    assert isinstance(data["peso_projetado_kg"], list)
     
 def test_ask_pet_dinamico():
     

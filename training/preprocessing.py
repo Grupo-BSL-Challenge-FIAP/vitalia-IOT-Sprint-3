@@ -7,16 +7,20 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     """Gera dados simulados de comportamento e saúde de pets com histórico temporal para o MVP."""
     np.random.seed(42)
     
-    pet_ids = np.random.randint(1000, 1100, num_records)
+    pet_ids = np.random.randint(1001, 1100, num_records)
+    pet_ids[0] = 1000
     
     datas_base = []
     pet_counters = {}
     
+    hoje = datetime.now()
     for pid in pet_ids:
         if pid not in pet_counters:
-            pet_counters[pid] = datetime.now() - timedelta(days=np.random.randint(10, 30))
+            pet_counters[pid] = hoje - timedelta(days=np.random.randint(10, 30))
         else:
             pet_counters[pid] += timedelta(days=np.random.randint(1, 3))
+            if pet_counters[pid] > hoje:
+                pet_counters[pid] = hoje - timedelta(days=np.random.randint(0, 5))
         datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
 
     data = {
@@ -46,14 +50,28 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     print(f"[OK] Dataset bruto com histórico gerado em: {filepath}")
     return df
 
+
 def preprocess_data(raw_filepath: str, processed_filepath: str):
-    """Limpa, trata valores nulos, mantém o pet_id e a data para formar o histórico temporal."""
+    """Limpa, trata valores nulos e garante que o pet 1000 e seu histórico estejam presentes."""
     print("Iniciando pré-processamento com histórico temporal...")
     df = pd.read_csv(raw_filepath)
     
     df['peso_kg'] = df['peso_kg'].fillna(df['peso_kg'].median())
     df = df.drop_duplicates()
     
+    if 1000 not in df['pet_id'].values:
+        linhas_pet_1000 = pd.DataFrame({
+            'pet_id': [1000, 1000, 1000],
+            'data': ['2026-08-01', '2026-08-10', '2026-08-20'],
+            'idade_anos': [3.0, 3.0, 3.0],
+            'peso_kg': [12.5, 12.6, 12.4],
+            'atividade_diaria_pct': [75.0, 80.0, 70.0],
+            'sono_diario_pct': [50.0, 45.0, 55.0],
+            'consumo_agua_ml': [500.0, 550.0, 480.0],
+            'status': [0, 0, 0]
+        })
+        df = pd.concat([df, linhas_pet_1000], ignore_index=True)
+
     df['data'] = pd.to_datetime(df['data'])
     df = df.sort_values(by=['pet_id', 'data'])
     df['data'] = df['data'].dt.strftime('%Y-%m-%d')

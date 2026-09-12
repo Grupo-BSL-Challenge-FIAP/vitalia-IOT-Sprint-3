@@ -8,14 +8,17 @@ class HistoryService:
     def _carregar_dados(self):
         if not os.path.exists(self.data_path):
             return pd.DataFrame()
-        return pd.read_csv(self.data_path)
+        df = pd.read_csv(self.data_path)
+        if 'pet_id' in df.columns:
+            df['pet_id'] = df['pet_id'].astype(int)
+        return df
 
     def obter_ultimo_registro(self, pet_id: int):
         df = self._carregar_dados()
         if df.empty:
             return None
         
-        pet_df = df[df['pet_id'] == pet_id]
+        pet_df = df[df['pet_id'] == int(pet_id)]
         if pet_df.empty:
             return None
         
@@ -36,7 +39,7 @@ class HistoryService:
         if df.empty:
             return {}
         
-        pet_df = df[df['pet_id'] == pet_id]
+        pet_df = df[df['pet_id'] == int(pet_id)]
         if pet_df.empty:
             return {}
         
@@ -45,22 +48,4 @@ class HistoryService:
             "mediaAtividadePct": float(pet_df['atividade_diaria_pct'].mean().round(1)),
             "mediaSonoPct": float(pet_df['sono_diario_pct'].mean().round(1)),
             "mediaConsumoAguaMl": float(pet_df['consumo_agua_ml'].mean().round(1))
-        }
-
-    def calcular_tendencias(self, pet_id: int):
-        df = self._carregar_dados()
-        if df.empty or len(df[df['pet_id'] == pet_id]) < 2:
-            return {"tendencia": "Dados insuficientes"}
-        
-        pet_df = df[df['pet_id'] == pet_id].sort_values(by='data')
-        atual = pet_df.iloc[-1]
-        anterior = pet_df.iloc[-2]
-        
-        dif_peso = float(atual['peso_kg'] - anterior['peso_kg'])
-        
-        return {
-            "registroAnterior": float(anterior['peso_kg']),
-            "registroAtual": float(atual['peso_kg']),
-            "variacaoPeso": round(dif_peso, 2),
-            "tendenciaPeso": "Subindo" if dif_peso > 0 else "Descendo" if dif_peso < 0 else "Estável"
         }

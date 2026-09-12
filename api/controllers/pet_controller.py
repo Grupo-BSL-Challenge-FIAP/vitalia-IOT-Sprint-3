@@ -24,7 +24,6 @@ try:
 except Exception:
     pipeline = None
      
-
 STATUS_MAP = {0: "NORMAL", 1: "ATENÇÃO", 2: "ALERTA"}
 
 history_service = HistoryService()
@@ -50,41 +49,6 @@ async def get_pet_insights_get(pet_id: str):
         "status_analise": status_analise, 
         "insights": insights,
         "ultimo_registro": ultimo
-    }
-
-@router.get("/{pet_id}/trends")
-async def get_pet_trends(pet_id: str):
-    """
-    Retorna tendências históricas e projeção de regressão de peso.
-    Aviso: A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.
-    """
-    try:
-        pid_int = int(pet_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="ID do pet inválido.")
-        
-    tendencias = history_service.calcular_tendencias(pid_int)
-    medias = history_service.calcular_medias_historicas(pid_int)
-    
-    regressor_path = os.path.join(os.path.dirname(__file__), '../../models/trained/vitalia_peso_regressor.pkl')
-    historico_dias = []
-    peso_projetado = []
-    
-    if os.path.exists(regressor_path):
-        regressor = joblib.load(regressor_path)
-        dias_futuros = np.array(range(1, 8)).reshape(-1, 1)
-        previsoes = regressor.predict(dias_futuros)
-        historico_dias = [int(d) for d in dias_futuros.flatten()]
-        peso_projetado = [round(float(p), 2) for p in previsoes]
-
-    return {
-        "pet_id": pet_id,
-        "tendencia_peso": tendencias.get("tendenciaPeso"),
-        "variacao_peso": tendencias.get("variacaoPeso"),
-        "media_historica_peso": medias.get("mediaPesoKg"),
-        "aviso": "A previsão atualmente utiliza dados simulados, pois o dispositivo IoT ainda não está disponível.",
-        "historico_dias": historico_dias,
-        "peso_projetado_kg": peso_projetado
     }
 
 @router.get("/{pet_id}/dashboard")
@@ -174,22 +138,17 @@ async def perguntar_ao_pet(pet_id: str, pergunta: str):
     except ValueError:
         raise HTTPException(status_code=400, detail="ID inválido.")
         
-
     ultimo = history_service.obter_ultimo_registro(pid_int)
     if not ultimo:
         raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
         
     medias = history_service.calcular_medias_historicas(pid_int)
-    
-    tendencias = history_service.calcular_tendencias(pid_int)
-
     resultado_analise = analysis_service.analisar_comportamento(pid_int)
     
     contexto = {
         "identificacao": f"Pet ID: {pet_id}",
         "dados_atuais": f"Peso: {ultimo.get('pesoKg')}kg, Atividade: {ultimo.get('atividadePct')}%, Sono: {ultimo.get('sonoPct')}%",
         "medias_historicas": f"Média de atividade: {medias.get('mediaAtividadePct')}%, Média de peso: {medias.get('mediaPesoKg')}kg",
-        "tendencia": f"Tendência de peso: {tendencias.get('tendenciaPeso')} (Variação: {tendencias.get('variacaoPeso')}%)",
         "classificacao_ml": resultado_analise.get("status"),
         "alteracoes_encontradas": resultado_analise.get("justificativaNumerica")
     }

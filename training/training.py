@@ -7,7 +7,8 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     """Gera dados simulados garantindo perfil fixo por pet (idade e peso base coerentes) com histórico temporal."""
     np.random.seed(42)
     
-    unique_pet_ids = np.random.randint(1000, 1100, size=50)
+    unique_pet_ids = np.random.randint(1001, 1100, size=49)
+    unique_pet_ids = np.insert(unique_pet_ids, 0, 1000)
     
     pet_profiles = {}
     for pid in unique_pet_ids:
