@@ -144,3 +144,20 @@ graph TD
 
 ### 19. Importante:
 No MVP atual, os dados provenientes da camada IoT são simulados. A arquitetura está preparada para substituir essa fonte simulada por dados reais futuramente.
+
+## 📊 Fluxo de Dados: Atual vs. Arquitetura Futura
+
+### MVP Atual
+No estágio atual do MVP, o fluxo de dados opera de forma simulada e integrada aos serviços internos:
+```text
+Dados simulados → HistoryService → AnalysisService → Machine Learning → Gemini → FastAPI → Aplicativo
+```
+
+### 20. Arquitetura Futura:
+Na evolução planejada para o projeto, a coleta de dados passará a ser automatizada por hardware real conectando-se diretamente ao ecossistema de persistência e inteligência:
+```text
+Dispositivo IoT → Backend → Oracle → IA → Aplicativo
+```
+
+### 21. ⚠️ Atenção
+A integração física e automatizada (ESP32 → Oracle → IA) representa a evolução futura e ainda não está ativa no ambiente do MVP atual.
