@@ -8,8 +8,6 @@ from api.schemas.pet_schemas import (
     PetDataInput, QuestionInput, ReportInput, 
     DashboardInput, RecommendationInput, InsightOutput
 )
-from api.services.report_service import ReportService
-from api.services.recommendation_service import RecommendationService
 from api.services.analysis_service import AnalysisService
 from api.services.history_service import HistoryService
 from api.services.llm_service import llm_service
