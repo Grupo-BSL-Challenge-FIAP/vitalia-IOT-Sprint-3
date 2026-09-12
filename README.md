@@ -118,10 +118,29 @@ pytest
 
 ### 16. Nota sobre as Métricas e Desempenho:
 Os resultados obtidos representam o desempenho do modelo sobre dados simulados utilizados para validação técnica do MVP e não representam validação clínica ou desempenho em dados reais.
-```
 
-### Acesso à Documentação (Swagger)
+### 17. Acesso à Documentação (Swagger)
 Com a API rodando localmente, acesse:
 ```bash
 http://127.0.0.1:8000/docs
 ```
+
+## 18. Arquitetura do Sistema
+
+```mermaid
+graph TD
+    A[Aplicativo] --> B[Backends / APIs]
+    B --> C[Banco de dados]
+    C --> D[Vitalia AI]
+    D --> E[HistoryService]
+    E --> F[AnalysisService / ML]
+    F --> G[Gemini]
+    G --> H[Insights]
+
+    subgraph Evolução Futura
+        I[Dispositivo IoT] --> J[Dados reais]
+    end
+```
+
+### 19. Importante:
+No MVP atual, os dados provenientes da camada IoT são simulados. A arquitetura está preparada para substituir essa fonte simulada por dados reais futuramente.

@@ -2,7 +2,7 @@ import os
 import joblib
 import pandas as pd
 import numpy as np
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from api.schemas.pet_schemas import (
     PetDataInput, QuestionInput, ReportInput, 
@@ -73,8 +73,8 @@ async def get_pet_dashboard(pet_id: str):
         }
     }
 
-@router.get("/{pet_id}/analysis")
-async def get_pet_analysis_get(pet_id: str):
+@router.get("/api/ai/pets/{pet_id}/dashboard")
+async def dashboard(pet_id: int, credentials = Depends(verificar_autenticacao)):
     try:
         pid_int = int(pet_id)
     except ValueError:
