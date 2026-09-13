@@ -218,6 +218,8 @@ A integração fi­sica e automatizada (ESP32 -> Oracle -> IA) representa a evol
 ### 19. Nota sobre a Avaliação de Regressão
 As métricas de avaliação de regressão (MAE, MSE, RMSE e \(R^2\)) calculadas no projeto representam o ajuste dos modelos ao histórico simulado do MVP.
 
-
+### 20. Distinção entre Classificação e Alteração Histórica
+* **Machine Learning**: Responsável por classificar o estado dos dados atuais (idade, peso atual, atividade atual, sono atual e água atual).
+* **AnalysisService**: Responsável por comparar o registro atual com o histórico individual, explicando eventuais variações em relação à evolução temporal do pet sem que pequenas oscilações configurem obrigatoriamente um erro de modelo.
 
 
