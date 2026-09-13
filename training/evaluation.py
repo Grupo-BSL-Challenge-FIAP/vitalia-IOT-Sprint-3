@@ -4,6 +4,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 PIPELINE_PATH = "models/trained/vitalia_pipeline.pkl"
 DATA_PATH = "data/processed/pets_dataset_ready.csv"
@@ -43,3 +45,18 @@ with open(METRICS_PATH, "w", encoding="utf-8") as f:
     json.dump(metrics, f, indent=4, ensure_ascii=False)
 
 print(f"Métricas multiclasse salvas com sucesso em {METRICS_PATH}!")
+
+
+plt.figure(figsize=(6, 5))
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=["NORMAL", "ATENÇÃO", "ALERTA"], 
+            yticklabels=["NORMAL", "ATENÇÃO", "ALERTA"])
+plt.xlabel("Previsto")
+plt.ylabel("Real")
+plt.title("Matriz de Confusão Multiclasse")
+plt.tight_layout()
+plt.savefig("models/confusion_matrix.png")
+plt.close()
+
+print("Matriz de confusão salva com sucesso em models/confusion_matrix.png!")
