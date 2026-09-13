@@ -53,3 +53,36 @@ class HistoryService:
             "mediaSonoPct": float(historical_df['sono_diario_pct'].mean().round(1)),
             "mediaConsumoAguaMl": float(historical_df['consumo_agua_ml'].mean().round(1))
         }
+    def prever_regressao_peso(self, pet_id: int):
+        df = self._carregar_dados()
+        if df.empty:
+            return None
+        
+        pet_df = df[df['pet_id'] == int(pet_id)].sort_values(by='data')
+        if len(pet_df) < 2:
+            return None 
+
+        X = range(len(pet_df))
+        y = pet_df['peso_kg'].values
+        
+        from sklearn.linear_model import LinearRegression
+        from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+        import numpy as np
+        
+        X_arr = np.array(X).reshape(-1, 1)
+        model = LinearRegression()
+        model.fit(X_arr, y)
+        y_pred = model.predict(X_arr)
+        
+        proximo_x = np.array([[len(pet_df)]])
+        peso_previsto = float(model.predict(proximo_x)[0])
+        
+        return {
+            "petId": pet_id,
+            "historico_analisado": len(pet_df),
+            "pesoPrevisto": round(peso_previsto, 2),
+            "mae": float(mean_absolute_error(y, y_pred)),
+            "mse": float(mean_squared_error(y, y_pred)),
+            "rmse": float(np.sqrt(mean_squared_error(y, y_pred))),
+            "r2": float(r2_score(y, y_pred))
+        }

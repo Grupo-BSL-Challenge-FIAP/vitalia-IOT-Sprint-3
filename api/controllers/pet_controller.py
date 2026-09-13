@@ -162,11 +162,17 @@ async def get_pet_trends(pet_id: str, credentials: str = Depends(verificar_auten
     if not resultado:
         raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
         
+    regressao_peso = history_service.prever_regressao_peso(pid_int)
+    if not regressao_peso:
+        raise HTTPException(status_code=484, detail="Histórico insuficiente para projeção de peso. A previsão de peso utiliza dados simulados, pois os dados reais do dispositivo IoT ainda não estão disponíveis.")
+
     return {
         "pet_id": pet_id,
         "tendencia": resultado["tendencia"],
         "variacao_pct": resultado["variacaoPct"],
         "media_historica": resultado["mediaHistorica"],
         "atividade_atual": resultado["atual"],
+        "regressao_peso": regressao_peso,
+        "documentacao": "A previsão de peso utiliza dados simulados, pois os dados reais do dispositivo IoT ainda não estão disponíveis.",
         "detalhes": resultado["justificativaNumerica"]
     }
