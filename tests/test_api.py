@@ -165,3 +165,44 @@ def test_insights_unificado_com_analysis():
     data = response.json()
     assert "status_analise" in data
     assert data["status_analise"] in ["NORMAL", "ATENÇÃO", "ALERTA"]
+    
+def test_consistencia_status_entre_endpoints():
+    with patch("api.controllers.pet_controller.analysis_service") as mock_analysis, \
+         patch("api.controllers.pet_controller.history_service") as mock_history, \
+         patch("api.controllers.pet_controller.llm_service") as mock_llm:
+        
+        mock_analysis.analisar_comportamento.return_value = {
+            "status": "ATENÇÃO",
+            "mediaHistorica": 65.7,
+            "atual": 50.0,
+            "variacaoPct": -23.8,
+            "justificativaNumerica": "Atividade abaixo do ideal.",
+            "tendencia": "Estável",
+            "alteracoes": ["Queda leve na atividade"]
+        }
+        
+        mock_history.obter_ultimo_registro.return_value = {
+            "pesoKg": 15.0, "atividadePct": 40.0, "sonoPct": 80.0, "consumoAguaMl": 300.0
+        }
+        mock_history.calcular_medias_historicas.return_value = {
+            "mediaPesoKg": 15.0, "mediaAtividadePct": 50.0, "mediaSonoPct": 80.0, "mediaConsumoAguaMl": 300.0
+        }
+        mock_history.obter_historico_pet.return_value = [
+            {"data": "2026-01-01", "pesoKg": 15.0},
+            {"data": "2026-01-02", "pesoKg": 15.1}
+        ]
+        
+        mock_llm.answer.return_value = "Resposta de teste"
+
+        resp_dashboard = client.get(f"/api/ai/pets/1000/dashboard{QUERY_PARAMS}", headers=HEADERS)
+        resp_insights = client.get("/api/ai/pets/1000/insights", headers=HEADERS)
+        resp_recommendations = client.get(f"/api/ai/pets/1000/recommendations{QUERY_PARAMS}", headers=HEADERS)
+        resp_trends = client.get(f"/api/ai/pets/1000/trends", headers=HEADERS)
+        resp_ask = client.post("/api/ai/pets/1000/ask?pergunta=Status?", headers=HEADERS)
+
+        assert resp_dashboard.status_code == 200
+        assert resp_insights.status_code == 200
+        assert resp_recommendations.status_code == 200
+        assert resp_trends.status_code == 200
+        assert resp_ask.status_code == 200
+        assert resp_insights.json().get("status_analise") == "ATENÇÃO"
