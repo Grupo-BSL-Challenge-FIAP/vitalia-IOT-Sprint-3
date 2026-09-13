@@ -1,4 +1,5 @@
 from api.services.history_service import HistoryService
+from api.services.ai_service import predict_pet_status
 
 class AnalysisService:
     def __init__(self):
@@ -18,17 +19,20 @@ class AnalysisService:
         if media_historica > 0:
             variacao_pct = ((atividade_atual - media_historica) / media_historica) * 100
 
-        status = "NORMAL"
-        if atividade_atual < 20 or ultimo["sonoPct"] > 90:
-            status = "ALERTA"
-        elif variacao_pct <= -30.0:
-            status = "ATENÇÃO"
+        pet_data = {
+            "peso_kg": float(ultimo.get("peso", 10.0)),
+            "consumo_agua_ml": float(ultimo.get("consumoAguaMl", 500.0)),
+            "atividade_diaria_pct": float(atividade_atual),
+            "sono_diario_pct": float(ultimo.get("sonoPct", 50))
+        }
+        
+        status_ml, explicabilidade = predict_pet_status(pet_data)
 
         return {
             "petId": pet_id,
             "mediaHistorica": media_historica,
             "atual": atividade_atual,
             "variacaoPct": round(variacao_pct, 2),
-            "status": status,
+            "status": status_ml,
             "justificativaNumerica": f"Média histórica de {media_historica}% com registro atual de {atividade_atual}%, resultando em uma variação de {round(variacao_pct, 2)}%."
         }
