@@ -84,11 +84,23 @@ async def get_pet_recommendations(pet_id: str, credentials: str = Depends(verifi
         
     recomendacoes = []
     if resultado["status"] == "ALERTA":
-        recomendacoes.append({"categoria": "Bem-estar", "acao": "Monitorar sinais clínicos e buscar avaliação", "justificativa": resultado["justificativaNumerica"]})
+        recomendacoes.append({
+            "categoria": "Acompanhamento", 
+            "acao": "Caso as alterações persistam, considerar avaliação veterinária.", 
+            "justificativa": resultado["justificativaNumerica"]
+        })
     elif resultado["status"] == "ATENÇÃO":
-        recomendacoes.append({"categoria": "Atividade Física", "acao": "Ajustar rotina de exercícios do pet", "justificativa": resultado["justificativaNumerica"]})
+        recomendacoes.append({
+            "categoria": "Acompanhamento", 
+            "acao": "Acompanhar as alterações identificadas nos próximos dias.", 
+            "justificativa": resultado["justificativaNumerica"]
+        })
     else:
-        recomendacoes.append({"categoria": "Manutenção", "acao": "Manter rotina atual", "justificativa": resultado["justificativaNumerica"]})
+        recomendacoes.append({
+            "categoria": "Manutenção", 
+            "acao": "Acompanhar as alterações identificadas nos próximos dias.", 
+            "justificativa": resultado["justificativaNumerica"]
+        })
         
     return {
         "pet_id": pet_id,
