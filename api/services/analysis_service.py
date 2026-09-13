@@ -19,8 +19,15 @@ class AnalysisService:
         if media_historica > 0:
             variacao_pct = ((atividade_atual - media_historica) / media_historica) * 100
 
+        if variacao_pct > 5.0:
+            tendencia_qualitativa = "CRESCENTE"
+        elif variacao_pct < -5.0:
+            tendencia_qualitativa = "DECRESCENTE"
+        else:
+            tendencia_qualitativa = "ESTÁVEL"
+
         pet_data = {
-            "peso_kg": float(ultimo.get("peso", 10.0)),
+            "peso_kg": float(ultimo.get("pesoKg", 10.0)),
             "consumo_agua_ml": float(ultimo.get("consumoAguaMl", 500.0)),
             "atividade_diaria_pct": float(atividade_atual),
             "sono_diario_pct": float(ultimo.get("sonoPct", 50))
@@ -33,6 +40,7 @@ class AnalysisService:
             "mediaHistorica": media_historica,
             "atual": atividade_atual,
             "variacaoPct": round(variacao_pct, 2),
+            "tendencia": tendencia_qualitativa,
             "status": status_ml,
-            "justificativaNumerica": f"Média histórica de {media_historica}% com registro atual de {atividade_atual}%, resultando em uma variação de {round(variacao_pct, 2)}%."
+            "justificativaNumerica": f"Média histórica de {media_historica}% com registro atual de {atividade_atual}%, resultando em uma variação de {round(variacao_pct, 2)}% ({tendencia_qualitativa})."
         }

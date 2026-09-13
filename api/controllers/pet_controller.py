@@ -165,3 +165,23 @@ async def perguntar_ao_pet(pet_id: str, pergunta: str, credentials: str = Depend
     
     resposta = llm_service.answer(contexto, pergunta)
     return {"pet_id": pet_id, "resposta": resposta}
+
+@router.get("/{pet_id}/trends")
+async def get_pet_trends(pet_id: str, credentials: str = Depends(verificar_autenticacao)):
+    try:
+        pid_int = int(pet_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="ID inválido.")
+        
+    resultado = analysis_service.analisar_comportamento(pid_int)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
+        
+    return {
+        "pet_id": pet_id,
+        "tendencia": resultado["tendencia"],
+        "variacao_pct": resultado["variacaoPct"],
+        "media_historica": resultado["mediaHistorica"],
+        "atividade_atual": resultado["atual"],
+        "detalhes": resultado["justificativaNumerica"]
+    }
