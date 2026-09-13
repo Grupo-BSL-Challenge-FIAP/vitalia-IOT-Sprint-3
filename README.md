@@ -60,13 +60,9 @@ Registros históricos de monitoramento, peso, métricas de atividade diária, pa
 
 ### 6. Métricas Reais (Geradas pelo evaluation.py)
 * Accuracy: 0.95
-
 * Precision: 0.94
-
 * Recall: 0.95
-
 * F1-Score: 0.94
-
 * Matriz de Confusão: Validada nas classes de monitoramento (Normal, Atenção, Alerta).
 
 ⚠️ Aviso sobre os Resultados: Os resultados representam somente o desempenho sobre o dataset sintético utilizado para validação técnica do MVP e não representam validação clínica ou desempenho em animais reais.
