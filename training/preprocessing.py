@@ -30,7 +30,6 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     hoje = datetime.now()
     for i, pid in enumerate(pet_ids):
         if pid == 1000:
-            # Cria datas sequenciais e distintas para o pet 1000
             data_pet_1000 = hoje - timedelta(days=(15 - i))
             datas_base.append(data_pet_1000.strftime("%Y-%m-%d"))
         else:
@@ -41,6 +40,25 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
                 if pet_counters[pid] > hoje:
                     pet_counters[pid] = hoje - timedelta(days=np.random.randint(0, 5))
             datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
+
+    atividade_diaria = [round(float(np.clip(np.random.normal(70, 10), 10, 100)), 2) for _ in range(num_records)]
+    sono_diario = [round(float(np.clip(np.random.normal(50, 10), 10, 90)), 2) for _ in range(num_records)]
+    consumo_agua = [round(float(np.clip(np.random.normal(500, 100), 100, 2000)), 2) for _ in range(num_records)]
+    status = np.random.choice([0, 1, 2], size=num_records, p=[0.7, 0.2, 0.1])
+    
+    df = pd.DataFrame({
+        'pet_id': pet_ids,
+        'data': datas_base,
+        'idade_anos': idades_fixas,
+        'peso_kg': pesos_variados,
+        'atividade_diaria_pct': atividade_diaria,
+        'sono_diario_pct': sono_diario,
+        'consumo_agua_ml': consumo_agua,
+        'status': status
+    })
+    
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    df.to_csv(filepath, index=False)
 
 
 def preprocess_data(raw_filepath: str, processed_filepath: str):
