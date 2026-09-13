@@ -215,6 +215,8 @@ A integração fi­sica e automatizada (ESP32 -> Oracle -> IA) representa a evol
 ### 18. Random Forest
 * O algoritmo **Random Forest** foi escolhido por sua alta robustez, excelente capacidade de generalização e desempenho preditivo de excelência (alcançando métrica F1-Macro de 1.0000) em dados tabulares de saúde e comportamento animal, garantindo previsões mais estáveis e seguras por meio de sua arquitetura de *ensemble*
 
+### 19. Nota sobre a Avaliação de Regressão
+As métricas de avaliação de regressão (MAE, MSE, RMSE e \(R^2\)) calculadas no projeto representam o ajuste dos modelos ao histórico simulado do MVP.
 
 
 
