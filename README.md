@@ -1,10 +1,10 @@
-# 🐾 Vitalia AI - API de Monitoramento de Saúde Animal
+﻿# ðŸ¾ Vitalia AI - API de Monitoramento de SaÃºde Animal
 
-A **Vitalia AI** é uma API desenvolvida em FastAPI que une Machine Learning (Random Forest), Inteligência Artificial Generativa (Google Gemini) e Análise de Dados para monitorar, prever e gerar insights sobre o bem-estar e comportamento de pets.
+A **Vitalia AI** Ã© uma API desenvolvida em FastAPI que une Machine Learning (Random Forest), InteligÃªncia Artificial Generativa (Google Gemini) e AnÃ¡lise de Dados para monitorar, prever e gerar insights sobre o bem-estar e comportamento de pets.
 
 ---
 
-## 👥 Integrantes do Grupo
+## ðŸ‘¥ Integrantes do Grupo
 
 <table>
   <tr>
@@ -12,7 +12,7 @@ A **Vitalia AI** é uma API desenvolvida em FastAPI que une Machine Learning (Ra
       <img src="https://github.com/moisesBarsoti.png" width="120" style="border-radius: 50%;"/>
     </td>
     <td>
-      <b>Moisés Barsoti Andrade de Oliveira</b><br/>
+      <b>MoisÃ©s Barsoti Andrade de Oliveira</b><br/>
       <b>RM:</b> 565049 &nbsp;&nbsp;|&nbsp;&nbsp;<b>Turma:</b> 2TDSPO - FIAP <br/>
     </td>
   </tr>
@@ -40,23 +40,23 @@ A **Vitalia AI** é uma API desenvolvida em FastAPI que une Machine Learning (Ra
 
 ---
 
-## 📋 Documentação e Requisitos do Projeto
+## ðŸ“‹ DocumentaÃ§Ã£o e Requisitos do Projeto
 
-### 1. Problema de Negócio
-Falta de monitoramento preditivo e automatizado do bem-estar de pets, dificultando a detecção precoce de quedas de atividade e problemas de saúde pelos tutores ou clínicas veterinárias.
+### 1. Problema de NegÃ³cio
+Falta de monitoramento preditivo e automatizado do bem-estar de pets, dificultando a detecÃ§Ã£o precoce de quedas de atividade e problemas de saÃºde pelos tutores ou clÃ­nicas veterinÃ¡rias.
 
 ### 2. Objetivo da IA
-Desenvolver um modelo preditivo capaz de analisar dados de telemetria e hábitos dos animais, gerando alertas precoces e insights explicáveis para otimizar os cuidados veterinários.
+Desenvolver um modelo preditivo capaz de analisar dados de telemetria e hÃ¡bitos dos animais, gerando alertas precoces e insights explicÃ¡veis para otimizar os cuidados veterinÃ¡rios.
 
-### 3. Usuários Beneficiados
-Tutores de pets, equipes veterinárias e plataformas de gestão de saúde animal.
+### 3. UsuÃ¡rios Beneficiados
+Tutores de pets, equipes veterinÃ¡rias e plataformas de gestÃ£o de saÃºde animal.
 
 ### 4. Dados Utilizados & Origem dos Dados
-Registros históricos de monitoramento, peso, métricas de atividade diária, padrão de sono e consumo de água gerados por simulações do sistema.
+Registros histÃ³ricos de monitoramento, peso, mÃ©tricas de atividade diÃ¡ria, padrÃ£o de sono e consumo de Ã¡gua gerados por simulaÃ§Ãµes do sistema.
 
-### 5. Informação Destacada sobre IoT Simulado & Formato do Mock
-> **⚠️ Aviso Importante sobre IoT:** 
-> Atualmente a Vitalia AI **utiliza dados simulados** para representar as informações que futuramente serão coletadas por dispositivos IoT.
+### 5. InformaÃ§Ã£o Destacada sobre IoT Simulado & Formato do Mock
+> **âš ï¸ Aviso Importante sobre IoT:** 
+> Atualmente a Vitalia AI **utiliza dados simulados** para representar as informaÃ§Ãµes que futuramente serÃ£o coletadas por dispositivos IoT.
 > **Formato do Mock de Entrada (Exemplo JSON):**
 > ```json
 > {
@@ -68,58 +68,57 @@ Registros históricos de monitoramento, peso, métricas de atividade diária, pa
 > }
 > ```
 
-### 6. Criação do Histórico
-O histórico e as médias comportamentais dos pets são gerados e consultados através dos serviços internos de dados (`HistoryService`) que mapeiam o ID do pet para simular a telemetria anterior.
+### 6. CriaÃ§Ã£o do HistÃ³rico
+O histÃ³rico e as mÃ©dias comportamentais dos pets sÃ£o gerados e consultados atravÃ©s dos serviÃ§os internos de dados (`HistoryService`) que mapeiam o ID do pet para simular a telemetria anterior.
 
 ### 7. Features Utilizadas
-* Atividade diária e histórico de monitoramento.
-* Variação de peso (`peso_kg` mapeado para o modelo).
-* Padrão de sono e indicadores comportamentais.
+* Atividade diÃ¡ria e histÃ³rico de monitoramento.
+* VariaÃ§Ã£o de peso (`peso_kg` mapeado para o modelo).
+* PadrÃ£o de sono e indicadores comportamentais.
 
 ### 8. Tratamento dos Dados
-Limpeza de valores nulos, normalização de escalas numéricas e mapeamento de features para compatibilidade com o pipeline de machine learning.
+Limpeza de valores nulos, normalizaÃ§Ã£o de escalas numÃ©ricas e mapeamento de features para compatibilidade com o pipeline de machine learning.
 
 ### 9. Modelo Selecionado & Justificativa
 * **Modelo:** Random Forest (`vitalia_rf_model.pkl` e `scaler.pkl`).
-* **Justificativa:** Escolhido pela alta interpretabilidade, eficiência computacional e precisão robusta em dados tabulares de telemetria.
+* **Justificativa:** Escolhido pela alta interpretabilidade, eficiÃªncia computacional e precisÃ£o robusta em dados tabulares de telemetria.
 
-### 10. Métricas Reais & Regressão Simulada
-* **Métricas de Classificação:** Validadas com base em acurácia e validação cruzada nos scripts de treino.
-* **Regressão de Peso:** Utiliza um regressor linear (`vitalia_peso_regressor.pkl`) para projeção futura baseada em dias simulados.
+### 10. Métricas Reais
+* **Métricas de Classificação:** Validadas com base em acurácia e validação cruzada nos scripts de treino do modelo Random Forest.
 
-### 11. Integração com Google Gemini (Gemini)
-Integração via Google GenAI SDK (`google-genai`) utilizando o modelo Gemini para traduzir análises de comportamento em recomendações de texto e respostas de Q&A humanizadas.
+### 11. IntegraÃ§Ã£o com Google Gemini (Gemini)
+IntegraÃ§Ã£o via Google GenAI SDK (`google-genai`) utilizando o modelo Gemini para traduzir anÃ¡lises de comportamento em recomendaÃ§Ãµes de texto e respostas de Q&A humanizadas.
 
-### 12. Limitações
-O modelo depende da consistência dos dados numéricos fornecidos nas requisições; variações drásticas nos inputs podem exigir recalibragem do pipeline.
+### 12. LimitaÃ§Ãµes
+O modelo depende da consistÃªncia dos dados numÃ©ricos fornecidos nas requisiÃ§Ãµes; variaÃ§Ãµes drÃ¡sticas nos inputs podem exigir recalibragem do pipeline.
 
 ### 13. Arquitetura
-Arquitetura modular em microsserviço estruturada em camadas: `controllers` (rotas FastAPI), `services` (regras de negócio, ML e LLM) e `schemas` (validação com Pydantic).
+Arquitetura modular em microsserviÃ§o estruturada em camadas: `controllers` (rotas FastAPI), `services` (regras de negÃ³cio, ML e LLM) e `schemas` (validaÃ§Ã£o com Pydantic).
 
-### 14. Variáveis de Ambiente (.env)
-Para rodar a aplicação, crie um arquivo `.env` na raiz com a chave:
+### 14. VariÃ¡veis de Ambiente (.env)
+Para rodar a aplicaÃ§Ã£o, crie um arquivo `.env` na raiz com a chave:
 ```env
 GEMINI_API_KEY=sua-chave-aqui
 ```
 
-### 15. Instalação, Execução & Testes
-Instalação das dependências:
+### 15. InstalaÃ§Ã£o, ExecuÃ§Ã£o & Testes
+InstalaÃ§Ã£o das dependÃªncias:
 ```bash
 pip install -r requirements.txt
 ```
-Execução da API:
+ExecuÃ§Ã£o da API:
 ```bash
 uvicorn api.main:app --reload
 ```
-Execução da Suíte de Testes (Pytest):
+ExecuÃ§Ã£o da SuÃ­te de Testes (Pytest):
 ```bash
 pytest
 ```
 
-### 16. Nota sobre as Métricas e Desempenho:
-Os resultados obtidos representam o desempenho do modelo sobre dados simulados utilizados para validação técnica do MVP e não representam validação clínica ou desempenho em dados reais.
+### 16. Nota sobre as MÃ©tricas e Desempenho:
+Os resultados obtidos representam o desempenho do modelo sobre dados simulados utilizados para validaÃ§Ã£o tÃ©cnica do MVP e nÃ£o representam validaÃ§Ã£o clÃ­nica ou desempenho em dados reais.
 
-### 17. Acesso à Documentação (Swagger)
+### 17. Acesso Ã  DocumentaÃ§Ã£o (Swagger)
 Com a API rodando localmente, acesse:
 ```bash
 http://127.0.0.1:8000/docs
@@ -137,27 +136,33 @@ graph TD
     F --> G[Gemini]
     G --> H[Insights]
 
-    subgraph Evolução Futura
+    subgraph EvoluÃ§Ã£o Futura
         I[Dispositivo IoT] --> J[Dados reais]
     end
 ```
 
 ### 19. Importante:
-No MVP atual, os dados provenientes da camada IoT são simulados. A arquitetura está preparada para substituir essa fonte simulada por dados reais futuramente.
+No MVP atual, os dados provenientes da camada IoT sÃ£o simulados. A arquitetura estÃ¡ preparada para substituir essa fonte simulada por dados reais futuramente.
 
-## 📊 Fluxo de Dados: Atual vs. Arquitetura Futura
+## ðŸ“Š Fluxo de Dados: Atual vs. Arquitetura Futura
 
 ### MVP Atual
-No estágio atual do MVP, o fluxo de dados opera de forma simulada e integrada aos serviços internos:
+No estÃ¡gio atual do MVP, o fluxo de dados opera de forma simulada e integrada aos serviÃ§os internos:
 ```text
-Dados simulados → HistoryService → AnalysisService → Machine Learning → Gemini → FastAPI → Aplicativo
+Dados simulados â†’ HistoryService â†’ AnalysisService â†’ Machine Learning â†’ Gemini â†’ FastAPI â†’ Aplicativo
 ```
 
 ### 20. Arquitetura Futura:
-Na evolução planejada para o projeto, a coleta de dados passará a ser automatizada por hardware real conectando-se diretamente ao ecossistema de persistência e inteligência:
+Na evoluÃ§Ã£o planejada para o projeto, a coleta de dados passarÃ¡ a ser automatizada por hardware real conectando-se diretamente ao ecossistema de persistÃªncia e inteligÃªncia:
 ```text
-Dispositivo IoT → Backend → Oracle → IA → Aplicativo
+Dispositivo IoT â†’ Backend â†’ Oracle â†’ IA â†’ Aplicativo
 ```
 
-### 21. ⚠️ Atenção
-A integração física e automatizada (ESP32 → Oracle → IA) representa a evolução futura e ainda não está ativa no ambiente do MVP atual.
+### 21. âš ï¸ AtenÃ§Ã£o
+A integraÃ§Ã£o fÃ­sica e automatizada (ESP32 â†’ Oracle â†’ IA) representa a evoluÃ§Ã£o futura e ainda nÃ£o estÃ¡ ativa no ambiente do MVP atual.
+
+
+
+
+
+
