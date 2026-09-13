@@ -40,12 +40,6 @@ A **Vitalia AI** é uma API desenvolvida em FastAPI que une Machine Learning, In
 
 ---
 
-🔗 Link API
-
-```bash
-http://127.0.0.1:8000/docs
-```
-
 📋 Documentação e Requisitos do Projeto
 ### 1. Problema de Negócio
 Falta de monitoramento preditivo e automatizado do bem-estar de pets, dificultando a detecção precoce de quedas de atividade e problemas de saúde pelos tutores ou clínicas veterinárias.
@@ -65,10 +59,10 @@ Registros históricos de monitoramento, peso, métricas de atividade diária, pa
 * Justificativa: Escolhido pela robustez, eficiência computacional e padronização das etapas de transformação e predição em dados tabulares de telemetria.
 
 ### 6. Métricas Reais (Geradas pelo evaluation.py)
-* Accuracy: 0.95
-* Precision: 0.94
-* Recall: 0.95
-* F1-Score: 0.94
+* Accuracy  = 1.0
+* Precision = 1.0
+* Recall    = 1.0
+* F1        = 1.0
 * Matriz de Confusão: Validada nas classes de monitoramento (Normal, Atenção, Alerta).
 
 ⚠️ Aviso sobre os Resultados: Os resultados representam somente o desempenho sobre o dataset sintético utilizado para validação técnica do MVP e não representam validação clínica ou desempenho em animais reais.
