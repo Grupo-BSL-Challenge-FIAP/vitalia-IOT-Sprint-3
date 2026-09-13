@@ -143,10 +143,22 @@ async def perguntar_ao_pet(pet_id: str, pergunta: str, credentials: str = Depend
     medias = history_service.calcular_medias_historicas(pid_int)
     resultado_analise = analysis_service.analisar_comportamento(pid_int)
     
+    if not resultado_analise:
+        raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
+
+    variacao = resultado_analise.get("variacaoPct", 0.0)
+    if variacao > 0:
+        tendencia = f"Aumento de {variacao}% na atividade em relação à média histórica."
+    elif variacao < 0:
+        tendencia = f"Redução de {abs(variacao)}% na atividade em relação à média histórica."
+    else:
+        tendencia = "Estável em relação à média histórica."
+    
     contexto = {
         "identificacao": f"Pet ID: {pet_id}",
         "dados_atuais": f"Peso: {ultimo.get('pesoKg')}kg, Atividade: {ultimo.get('atividadePct')}%, Sono: {ultimo.get('sonoPct')}%",
         "medias_historicas": f"Média de atividade: {medias.get('mediaAtividadePct')}%, Média de peso: {medias.get('mediaPesoKg')}kg",
+        "tendencia": tendencia,
         "classificacao_ml": resultado_analise.get("status"),
         "alteracoes_encontradas": resultado_analise.get("justificativaNumerica")
     }
