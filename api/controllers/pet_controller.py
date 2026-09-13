@@ -71,22 +71,6 @@ async def get_pet_dashboard(pet_id: str, credentials: str = Depends(verificar_au
         }
     }
 
-@router.get("/api/ai/pets/{pet_id}/dashboard")
-async def dashboard(pet_id: int, credentials = Depends(verificar_autenticacao)):
-    try:
-        pid_int = int(pet_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="ID inválido.")
-
-    resultado = analysis_service.analisar_comportamento(pid_int)
-    if not resultado:
-        raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
-
-    return {
-        "pet_id": pet_id,
-        "analise_comportamental": resultado
-    }
-
 @router.get("/{pet_id}/recommendations")
 async def get_pet_recommendations(pet_id: str, credentials: str = Depends(verificar_autenticacao)):
     try:
