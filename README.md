@@ -86,16 +86,22 @@ API_SECRET_KEY=seu_token_da_api
 A Vitalia AI não realiza diagnóstico veterinário e não substitui avaliação profissional. As classificações representam alterações e padrões encontrados nos dados disponíveis.
 
 ### 10. Arquitetura do Sistema e Fluxo de Dados
-MVP Atual
-No estágio atual do MVP, os dados são simulados:
-```Bash
-MVP atual → Dados simulados → Vitalia AI
-```
-Arquitetura Futura
-Na evolução planejada:
 
-```Bash
-Arquitetura futura: IoT → Backend → Banco → Vitalia AI
+#### MVP atual
+```text
+Dados simulados
+↓
+HistoryService
+↓
+AnalysisService
+↓
+Machine Learning
+↓
+Gemini
+↓
+FastAPI
+↓
+Aplicativo
 ```
 (A integração física e automatizada IoT representa a evolução futura e ainda não está ativa nesta Sprint).
 
