@@ -5,8 +5,8 @@ import numpy as np
 from fastapi import APIRouter, Depends, HTTPException
 
 from api.schemas.pet_schemas import (
-    PetDataInput, QuestionInput, ReportInput, 
-    DashboardInput, RecommendationInput, InsightOutput
+    PetDataInput, QuestionInput, 
+    RecommendationInput, InsightOutput
 )
 from api.services.analysis_service import AnalysisService
 from api.services.history_service import HistoryService

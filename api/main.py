@@ -17,7 +17,9 @@ from api.security import verificar_autenticacao
 load_dotenv()
 
 ENV = os.getenv("APP_ENV", "development")
-SECRET_KEY = os.getenv("API_SECRET_KEY", "default-secret")
+SECRET_KEY = os.getenv("API_SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("API_SECRET_KEY não definida nas variáveis de ambiente.")
 
 app = FastAPI(
     title="Vitalia AI API", 
