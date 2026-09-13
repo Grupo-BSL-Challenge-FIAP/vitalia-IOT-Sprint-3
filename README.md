@@ -162,6 +162,13 @@ Dispositivo IoT -> Backend -> Oracle -> IA -> Aplicativo
 ### 16.Atenção
 A integração fi­sica e automatizada (ESP32 -> Oracle -> IA) representa a evolução futura e ainda não está ativa no ambiente do MVP atual.
 
+### 17. Detalhes Técnicos, Machine Learning & Pré-processamento
+* **Histórico Individual por Pet**: Armazenamento e consulta de dados segregados por ID do pet.
+* **Médias, Tendências e Alterações**: Cálculo automatizado de médias históricas, rastreamento de tendências temporais e identificação de desvios comportamentais.
+* **Features & Preprocessing**: Atributos de telemetria focados em idade, peso, atividade diária, padrão de sono e consumo de água, submetidos a etapas de limpeza e validação estrutural.
+* **Random Forest & Motivo da Escolha**: O modelo utiliza o algoritmo **Random Forest** em virtude de sua alta robustez, excelente desempenho preditivo em dados tabulares e capacidade de capturar relações não lineares entre as variáveis de saúde animal.
+* **Regressão e Previsão**: Tarefas de modelagem preditiva aplicadas à estimativa contínua de métricas.
+* **Ambiente de Execução**: Projeto configurado, executado e validado nativamente em **Python 3.11**.
 
 
 
