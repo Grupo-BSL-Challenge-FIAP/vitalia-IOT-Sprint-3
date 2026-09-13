@@ -103,6 +103,7 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
         raise HTTPException(status_code=500, detail="Pipeline ML não carregado.")
         
     df_entrada = pd.DataFrame([{
+        "idade_anos": dados_pet.idade_anos,
         "peso_kg": dados_pet.peso_kg,
         "atividade_diaria_pct": dados_pet.atividade_diaria_pct,
         "sono_diario_pct": dados_pet.sono_diario_pct,

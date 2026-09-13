@@ -35,6 +35,7 @@ class AnalysisService:
             tendencia_qualitativa = "ESTÁVEL"
 
         df_input = pd.DataFrame([{
+            "idade_anos": float(ultimo.get("idade_anos", 3.0)),
             "peso_kg": float(ultimo.get("pesoKg", 10.0)),
             "atividade_diaria_pct": float(atividade_atual),
             "sono_diario_pct": float(ultimo.get("sonoPct", 50)),
@@ -45,7 +46,6 @@ class AnalysisService:
         if self.pipeline:
             pred = self.pipeline.predict(df_input)
             val = str(pred[0])
-            # Mapeia valores numéricos ou strings para o padrão esperado
             mapping = {"0": "NORMAL", "1": "ATENÇÃO", "2": "ALERTA"}
             status_ml = mapping.get(val, val)
 
