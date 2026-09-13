@@ -133,15 +133,38 @@ Instalação das dependências:
 ```Bash
 pip install -r requirements.txt
 ```
+Reprodução do Modelo e Treinamento
+Para executar o fluxo completo de reprodução e treinamento dos dados e do modelo:
+
+```Bash
+python -m training.preprocessing
+```
+```Bash
+python -m training.training
+```
+```Bash
+python -m training.evaluation
+```
+E finalmente, para validar a suíte de testes:
+```Bash
+pytest -q
+```
 Execução da API:
 
 ```Bash
 uvicorn api.main:app --reload
 ```
-Execução dos Testes:
-
-```Bash
-pytest
+Fluxo Documentado:
+```text
+preprocessing
+     ↓
+training
+     ↓
+evaluation
+     ↓
+tests
+     ↓
+API
 ```
 
 ## 13. Arquitetura do Sistema
