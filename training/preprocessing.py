@@ -72,16 +72,18 @@ def preprocess_data(raw_filepath: str, processed_filepath: str):
     
     df = df.drop_duplicates(subset=['pet_id', 'data'], keep='last')
     
-    if 1000 not in df['pet_id'].values:
+    mask_1000 = df['pet_id'] == 1000
+    if not mask_1000.any() or mask_1000.sum() < 5:
+        df = df[df['pet_id'] != 1000]
         linhas_pet_1000 = pd.DataFrame({
-            'pet_id': [1000, 1000, 1000],
-            'data': ['2026-08-01', '2026-08-10', '2026-08-20'],
-            'idade_anos': [3.0, 3.0, 3.0],
-            'peso_kg': [12.5, 12.6, 12.4],
-            'atividade_diaria_pct': [75.0, 80.0, 70.0],
-            'sono_diario_pct': [50.0, 45.0, 55.0],
-            'consumo_agua_ml': [500.0, 550.0, 480.0],
-            'status': [0, 0, 0]
+            'pet_id': [1000, 1000, 1000, 1000, 1000],
+            'data': ['2026-08-01', '2026-08-05', '2026-08-10', '2026-08-15', '2026-08-20'],
+            'idade_anos': [3.0, 3.0, 3.0, 3.0, 3.0],
+            'peso_kg': [12.5, 12.6, 12.4, 12.5, 12.7],
+            'atividade_diaria_pct': [75.0, 80.0, 70.0, 78.0, 82.0],
+            'sono_diario_pct': [50.0, 45.0, 55.0, 48.0, 52.0],
+            'consumo_agua_ml': [500.0, 550.0, 480.0, 520.0, 530.0],
+            'status': [0, 0, 0, 0, 0]
         })
         df = pd.concat([df, linhas_pet_1000], ignore_index=True)
 
