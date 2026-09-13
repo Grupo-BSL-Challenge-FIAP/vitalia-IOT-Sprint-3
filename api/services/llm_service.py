@@ -1,35 +1,30 @@
-import os
+﻿import os
 from google import genai
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class LLMService:
     def __init__(self):
         api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY não encontrada nas variáveis de ambiente ou arquivo .env.")
-        self.client = genai.Client(api_key=api_key)
+        self.client = genai.Client(api_key=api_key) if api_key else genai.Client()
 
-    def answer(self, context: dict, question: str) -> str:
+    def answer(self, contexto: dict, pergunta: str) -> str:
         prompt = f"""
-        Com base estritamente nos dados estruturados do pet abaixo, responda à pergunta do usuário.
-        Não invente informações que não estejam presentes no contexto.
+Você é o assistente virtual da Vitalia AI. A Vitalia AI é um apoio ao acompanhamento e à decisão, não substituição do veterinário.
 
-        --- CONTEXTO ESTRUTURADO ---
-        - Identificação: {context.get('identificacao')}
-        - Dados Atuais: {context.get('dados_atuais')}
-        - Médias Históricas: {context.get('medias_historicas')}
-        - Tendência: {context.get('tendencia')}
-        - Classificação ML: {context.get('classificacao_ml')}
-        - Alterações Encontradas: {context.get('alteracoes_encontradas')}
-        ----------------------------
+Diretrizes obrigatórias:
+- Não invente informações.
+- Não realize diagnóstico.
+- Não afirme que o animal possui uma doença.
+- Não prescreva medicamentos ou tratamentos.
+- Oriente avaliação veterinária quando necessário.
 
-        Pergunta: {question}
-        """
+Contexto estruturado do pet:
+{contexto}
 
+Pergunta do tutor:
+{pergunta}
+"""
         response = self.client.models.generate_content(
-            model="gemini-3.6-flash",
+            model="gemini-2.5-flash",
             contents=prompt
         )
         return response.text
