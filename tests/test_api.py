@@ -205,4 +205,17 @@ def test_consistencia_status_entre_endpoints():
         assert resp_recommendations.status_code == 200
         assert resp_trends.status_code == 200
         assert resp_ask.status_code == 200
-        assert resp_insights.json().get("status_analise") == "ATENÇÃO"
+
+        status_dashboard = resp_dashboard.json().get("status_geral")
+        status_insights = resp_insights.json().get("status_analise")
+        status_recommendations = resp_recommendations.json().get("status_analise")
+
+        assert status_dashboard == "ATENÇÃO"
+        assert status_insights == "ATENÇÃO"
+        assert status_recommendations == "ATENÇÃO"
+        assert status_dashboard == status_insights == status_recommendations
+
+        mock_llm.answer.assert_called_once()
+        args, _ = mock_llm.answer.call_args
+        contexto_enviado = args[0]
+        assert contexto_enviado.get("classificacao") == "ATENÇÃO"
