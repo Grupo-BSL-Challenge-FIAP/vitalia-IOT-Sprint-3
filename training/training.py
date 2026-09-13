@@ -52,6 +52,12 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
             best_score = score
             best_name = name
             best_model = pipeline
+
+    print(f"\n[OK] Melhor modelo selecionado: {best_name} com F1-Macro de {best_score:.4f}")
+    
+    os.makedirs(os.path.dirname(model_output_path), exist_ok=True)
+    joblib.dump(best_model, model_output_path)
+    print(f"[OK] Pipeline salvo com sucesso em: {model_output_path}")
             
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -67,12 +73,6 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
     plt.savefig("models/model_comparison.png")
     plt.close()
     print("[OK] Gráfico de comparação salvo em: models/model_comparison.png")
-
-    print(f"\n[OK] Melhor modelo selecionado: {best_name} com F1-Macro de {best_score:.4f}")
-    
-    os.makedirs(os.path.dirname(model_output_path), exist_ok=True)
-    joblib.dump(best_model, model_output_path)
-    print(f"[OK] Pipeline salvo com sucesso em: {model_output_path}")
     
 if __name__ == "__main__":
     train_and_save_pipeline(
