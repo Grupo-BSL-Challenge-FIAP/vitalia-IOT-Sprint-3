@@ -137,30 +137,30 @@ graph TD
     F --> G[Gemini]
     G --> H[Insights]
 
-    subgraph EvoluÃ§Ã£o Futura
+    subgraph Evolução Futura
         I[Dispositivo IoT] --> J[Dados reais]
     end
 ```
 
 ### 14. Importante:
-No MVP atual, os dados provenientes da camada IoT sÃ£o simulados. A arquitetura estÃ¡ preparada para substituir essa fonte simulada por dados reais futuramente.
+No MVP atual, os dados provenientes da camada IoT são simulados. A arquitetura esta preparada para substituir essa fonte simulada por dados reais futuramente.
 
-## ðŸ“Š Fluxo de Dados: Atual vs. Arquitetura Futura
+##  Fluxo de Dados: Atual vs. Arquitetura Futura
 
 ### MVP Atual
-No estÃ¡gio atual do MVP, o fluxo de dados opera de forma simulada e integrada aos serviÃ§os internos:
+No estagio atual do MVP, o fluxo de dados opera de forma simulada e integrada aos serviçõs internos:
 ```text
-Dados simulados â†’ HistoryService â†’ AnalysisService â†’ Machine Learning â†’ Gemini â†’ FastAPI â†’ Aplicativo
+Dados simulados -> HistoryService -> AnalysisService -> Machine Learning -> Gemini -> FastAPI -> Aplicativo
 ```
 
 ### 15. Arquitetura Futura:
-Na evoluÃ§Ã£o planejada para o projeto, a coleta de dados passarÃ¡ a ser automatizada por hardware real conectando-se diretamente ao ecossistema de persistÃªncia e inteligÃªncia:
+Na evolução planejada para o projeto, a coleta de dados passará a ser automatizada por hardware real conectando-se diretamente ao ecossistema de persistência e inteligência:
 ```text
-Dispositivo IoT â†’ Backend â†’ Oracle â†’ IA â†’ Aplicativo
+Dispositivo IoT -> Backend -> Oracle -> IA -> Aplicativo
 ```
 
-### 16. âš ï¸ AtenÃ§Ã£o
-A integraÃ§Ã£o fÃ­sica e automatizada (ESP32 â†’ Oracle â†’ IA) representa a evoluÃ§Ã£o futura e ainda nÃ£o estÃ¡ ativa no ambiente do MVP atual.
+### 16.Atenção
+A integração fi­sica e automatizada (ESP32 -> Oracle -> IA) representa a evolução futura e ainda não está ativa no ambiente do MVP atual.
 
 
 
