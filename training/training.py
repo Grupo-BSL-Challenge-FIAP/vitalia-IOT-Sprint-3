@@ -46,7 +46,7 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
         score = f1_score(y_test, y_pred, average="macro", zero_division=0)
         print(f"-> {name}: {score:.4f}")
         
-        if score > best_score:
+        if score > best_score or (score == best_score and name == "Random Forest"):
             best_score = score
             best_name = name
             best_model = pipeline

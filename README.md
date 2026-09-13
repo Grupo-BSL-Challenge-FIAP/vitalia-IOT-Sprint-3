@@ -189,6 +189,9 @@ A integração fi­sica e automatizada (ESP32 -> Oracle -> IA) representa a evol
 * **Regressão e Previsão**: Tarefas de modelagem preditiva aplicadas à estimativa contínua de métricas.
 * **Ambiente de Execução**: Projeto configurado, executado e validado nativamente em **Python 3.11**.
 
+### 18. Random Forest
+* O algoritmo **Random Forest** foi escolhido por sua alta robustez, excelente capacidade de generalização e desempenho preditivo de excelência (alcançando métrica F1-Macro de 1.0000)[cite: 5] em dados tabulares de saúde e comportamento animal, garantindo previsões mais estáveis e seguras por meio de sua arquitetura de *ensemble*
+
 
 
 
