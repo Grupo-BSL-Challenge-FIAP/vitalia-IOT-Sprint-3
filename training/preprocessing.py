@@ -8,13 +8,17 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     np.random.seed(42)
     
     pet_ids = np.random.randint(1001, 1100, num_records)
-    pet_ids[0] = 1000
+    
+    for i in range(10):
+        pet_ids[i] = 1000
     
     unique_pets = np.unique(pet_ids)
     pet_ages = {pid: round(float(np.random.uniform(0.5, 15)), 1) for pid in unique_pets}
+    pet_ages[1000] = 3.0
     idades_fixas = [pet_ages[pid] for pid in pet_ids]
     
     pet_base_weights = {pid: round(float(np.random.uniform(4.0, 25.0)), 2) for pid in unique_pets}
+    pet_base_weights[1000] = 12.5  
     pesos_variados = [
         round(float(np.clip(pet_base_weights[pid] + np.random.normal(0, 0.2), 1.0, 50.0)), 2) 
         for pid in pet_ids
@@ -24,42 +28,19 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     pet_counters = {}
     
     hoje = datetime.now()
-    for pid in pet_ids:
-        if pid not in pet_counters:
-            pet_counters[pid] = hoje - timedelta(days=np.random.randint(10, 30))
+    for i, pid in enumerate(pet_ids):
+        if pid == 1000:
+            # Cria datas sequenciais e distintas para o pet 1000
+            data_pet_1000 = hoje - timedelta(days=(15 - i))
+            datas_base.append(data_pet_1000.strftime("%Y-%m-%d"))
         else:
-            pet_counters[pid] += timedelta(days=np.random.randint(1, 3))
-            if pet_counters[pid] > hoje:
-                pet_counters[pid] = hoje - timedelta(days=np.random.randint(0, 5))
-        datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
-
-    data = {
-        'pet_id': pet_ids,
-        'data': datas_base,
-        'idade_anos': idades_fixas,
-        'peso_kg': pesos_variados,
-        'atividade_diaria_pct': np.random.normal(70, 20, num_records).clip(0, 100).round(1),
-        'sono_diario_pct': np.random.normal(60, 15, num_records).clip(0, 100).round(1),
-        'consumo_agua_ml': np.random.normal(600, 200, num_records).clip(100, 2000).round(0),
-    }
-    
-    df = pd.DataFrame(data)
-    
-    condicoes = [
-        (df['atividade_diaria_pct'] < 25) | (df['sono_diario_pct'] > 90) | (df['consumo_agua_ml'] < 250),
-        (df['atividade_diaria_pct'] < 45) | (df['sono_diario_pct'] > 80) | (df['consumo_agua_ml'] < 400)
-    ]
-    escolhas = [2, 1]
-    df['status'] = np.select(condicoes, escolhas, default=0)
-    
-    idx_nulos = np.random.choice(df.index, size=50, replace=False)
-    df.loc[idx_nulos, 'peso_kg'] = np.nan
-    
-    
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    df.to_csv(filepath, index=False)
-    print(f"[OK] Dataset bruto com histórico gerado em: {filepath}")
-    return df
+            if pid not in pet_counters:
+                pet_counters[pid] = hoje - timedelta(days=np.random.randint(10, 30))
+            else:
+                pet_counters[pid] += timedelta(days=np.random.randint(1, 3))
+                if pet_counters[pid] > hoje:
+                    pet_counters[pid] = hoje - timedelta(days=np.random.randint(0, 5))
+            datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
 
 
 def preprocess_data(raw_filepath: str, processed_filepath: str):
