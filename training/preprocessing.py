@@ -14,6 +14,12 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     pet_ages = {pid: round(float(np.random.uniform(0.5, 15)), 1) for pid in unique_pets}
     idades_fixas = [pet_ages[pid] for pid in pet_ids]
     
+    pet_base_weights = {pid: round(float(np.random.uniform(4.0, 25.0)), 2) for pid in unique_pets}
+    pesos_variados = [
+        round(float(np.clip(pet_base_weights[pid] + np.random.normal(0, 0.2), 1.0, 50.0)), 2) 
+        for pid in pet_ids
+    ]
+    
     datas_base = []
     pet_counters = {}
     
@@ -31,7 +37,7 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
         'pet_id': pet_ids,
         'data': datas_base,
         'idade_anos': idades_fixas,
-        'peso_kg': (5.0 + np.random.uniform(0.5, 3.0, num_records) * np.random.uniform(0.8, 1.5, num_records)).round(2),
+        'peso_kg': pesos_variados,
         'atividade_diaria_pct': np.random.normal(70, 20, num_records).clip(0, 100).round(1),
         'sono_diario_pct': np.random.normal(60, 15, num_records).clip(0, 100).round(1),
         'consumo_agua_ml': np.random.normal(600, 200, num_records).clip(100, 2000).round(0),
