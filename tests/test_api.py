@@ -1,4 +1,4 @@
-import os
+﻿import os
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from fastapi.testclient import TestClient
@@ -10,6 +10,7 @@ from api.main import app
 
 client = TestClient(app)
 HEADERS = {"Authorization": "Bearer token-compartilhado-123"}
+HEADERS_INVALIDO = {"Authorization": "Bearer token-errado"}
 
 VALID_PAYLOAD = {
     "idade_anos": 3.5,
@@ -56,6 +57,10 @@ def test_predict_sem_autenticacao():
     response = client.post("/api/ai/pets/1000/predict", json=VALID_PAYLOAD)
     assert response.status_code == 401
 
+def test_token_invalido():
+    response = client.post("/api/ai/pets/1000/predict", json=VALID_PAYLOAD, headers=HEADERS_INVALIDO)
+    assert response.status_code == 401
+
 def test_predict_idade_peso_invalido():
     payload_invalido = VALID_PAYLOAD.copy()
     payload_invalido["idade_anos"] = -1.0
@@ -66,6 +71,13 @@ def test_predict_idade_peso_invalido():
 def test_predict_percentual_acima_100():
     payload_invalido = VALID_PAYLOAD.copy()
     payload_invalido["atividade_diaria_pct"] = 150.0
+    response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
+    assert response.status_code == 422
+
+def test_predict_sono_agua_invalidos():
+    payload_invalido = VALID_PAYLOAD.copy()
+    payload_invalido["sono_diario_pct"] = 120.0
+    payload_invalido["consumo_agua_ml"] = -50.0
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
@@ -101,7 +113,6 @@ def test_alteracao_alerta():
         assert response.status_code == 200
         assert "ALERTA" in response.text
         
-        
 def test_dashboard_historico_medias():
     resposta_normal = criar_mock_response("NORMAL", "Manutenção", "Monitorar", "Tudo ok")
     with patch("google.genai.Client") as mock_client_cls:
@@ -123,7 +134,6 @@ def test_recommendations_geracao():
         assert response.status_code == 200
 
 def test_machine_learning_predict():
-
     payload_ml = {
         "idade_anos": 3.5,
         "peso_kg": 15.0,
@@ -135,13 +145,10 @@ def test_machine_learning_predict():
     assert response.status_code == 200
     assert "predicao" in response.json()
 
-    
 def test_ask_pet_dinamico():
-    
     with patch("api.controllers.pet_controller.llm_service") as mock_llm:
         mock_llm.answer.return_value = "Resposta personalizada baseada no histórico do pet."
         
-        payload = {"pergunta": "Como está a saúde do pet?"}
         response = client.post("/api/ai/pets/1000/ask?pergunta=Como%20está%20a%20saúde%20do%20pet?", headers=HEADERS)
         assert response.status_code == 200
         data = response.json()
@@ -151,7 +158,6 @@ def test_ask_pet_dinamico():
 def test_ask_pet_inexistente():
     response = client.post("/api/ai/pets/9999/ask?pergunta=Tudo%20bem?", headers=HEADERS)
     assert response.status_code == 404
-    
     
 def test_insights_unificado_com_analysis():
     response = client.get("/api/ai/pets/1000/insights", headers=HEADERS)
