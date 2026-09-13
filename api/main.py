@@ -1,15 +1,11 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends
-
-from api.controllers.pet_controller import router as pet_router
-
-from fastapi import Request
+from fastapi import FastAPI, Depends, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-
 from json import JSONDecodeError
 
+from api.controllers.pet_controller import router as pet_router
 from api.security import verificar_autenticacao
 
 load_dotenv()
