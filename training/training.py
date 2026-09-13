@@ -73,3 +73,9 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
     os.makedirs(os.path.dirname(model_output_path), exist_ok=True)
     joblib.dump(best_model, model_output_path)
     print(f"[OK] Pipeline salvo com sucesso em: {model_output_path}")
+    
+if __name__ == "__main__":
+    train_and_save_pipeline(
+        "data/processed/pets_dataset_ready.csv",
+        "models/trained/vitalia_pipeline.pkl"
+    )
