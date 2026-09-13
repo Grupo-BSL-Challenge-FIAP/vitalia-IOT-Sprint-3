@@ -103,6 +103,19 @@ FastAPI
 ↓
 Aplicativo
 ```
+* FUTURO
+```text
+Dispositivo IoT
+↓
+Backend
+↓
+Banco de dados
+↓
+Vitalia AI
+↓
+Aplicativo
+```
+
 (A integração física e automatizada IoT representa a evolução futura e ainda não está ativa nesta Sprint).
 
 ### 11. Endpoints Reais da API
