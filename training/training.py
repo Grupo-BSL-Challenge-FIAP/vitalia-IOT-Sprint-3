@@ -1,10 +1,15 @@
 import pandas as pd
 import numpy as np
 import os
+import joblib
 from datetime import datetime, timedelta
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
 
 def generate_synthetic_data(filepath: str, num_records: int = 2000):
-    """Gera dados simulados garantindo perfil fixo por pet (idade e peso base coerentes) com histórico temporal."""
+    """Gera dados simulados garantindo perfil fixo por pet com histórico temporal."""
     np.random.seed(42)
     
     unique_pet_ids = np.random.randint(1001, 1100, size=49)
@@ -22,14 +27,12 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     
     for _ in range(num_records):
         pid = np.random.choice(unique_pet_ids)
-
         pet_counters[pid] += timedelta(days=np.random.randint(1, 3))
         if pet_counters[pid] > datetime.now():
             pet_counters[pid] = datetime.now() - timedelta(days=np.random.randint(0, 5))
         data_str = pet_counters[pid].strftime("%Y-%m-%d")
         
         perfil = pet_profiles[pid]
-        
         var_peso = np.random.normal(1.0, 0.03)
         peso_atual = round(perfil["peso_base_kg"] * var_peso, 2)
 
@@ -70,7 +73,7 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     return df
 
 def preprocess_data(raw_filepath: str, processed_filepath: str):
-    """Limpa, trata valores nulos e organiza o histórico temporal por pet[cite: 5]."""
+    """Limpa, trata valores nulos e organiza o histórico temporal por pet."""
     print("Iniciando pré-processamento com histórico temporal...")
     df = pd.read_csv(raw_filepath)
     
@@ -83,13 +86,38 @@ def preprocess_data(raw_filepath: str, processed_filepath: str):
     
     os.makedirs(os.path.dirname(processed_filepath), exist_ok=True)
     df.to_csv(processed_filepath, index=False)
-    
     print(f"[OK] Dataset processado com histórico salvo em: {processed_filepath}")
     return df
+
+def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
+    """Treina o pipeline unificado com StandardScaler e RandomForest, usando stratify."""
+    print("Iniciando treinamento do modelo e criação do pipeline...")
+    df = pd.read_csv(processed_filepath)
+    
+    features = ['idade_anos', 'peso_kg', 'atividade_diaria_pct', 'sono_diario_pct', 'consumo_agua_ml']
+    X = df[features]
+    y = df['status']
+    
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+    
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('classifier', RandomForestClassifier(random_state=42))
+    ])
+    
+    pipeline.fit(X_train, y_train)
+    
+    os.makedirs(os.path.dirname(model_output_path), exist_ok=True)
+    joblib.dump(pipeline, model_output_path)
+    print(f"[OK] Pipeline treinado e salvo com sucesso em: {model_output_path}")
 
 if __name__ == "__main__":
     RAW_PATH = "data/raw/pets_raw_data.csv"
     PROCESSED_PATH = "data/processed/pets_dataset_ready.csv"
+    MODEL_PATH = "models/trained/vitalia_pipeline.pkl"
     
     generate_synthetic_data(RAW_PATH)
     preprocess_data(RAW_PATH, PROCESSED_PATH)
+    train_and_save_pipeline(PROCESSED_PATH, MODEL_PATH)
