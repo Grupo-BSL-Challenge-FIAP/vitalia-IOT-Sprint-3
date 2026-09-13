@@ -1,5 +1,3 @@
-from fastapi import FastAPI
-from fastapi.security import HTTPBearer
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends
