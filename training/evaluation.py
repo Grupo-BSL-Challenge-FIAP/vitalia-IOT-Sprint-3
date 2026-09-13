@@ -18,7 +18,7 @@ if not os.path.exists(DATA_PATH):
 pipeline = joblib.load(PIPELINE_PATH)
 
 df = pd.read_csv(DATA_PATH)
-features = ["peso_kg", "atividade_diaria_pct", "sono_diario_pct", "consumo_agua_ml"]
+features = ["idade_anos", "peso_kg", "atividade_diaria_pct", "sono_diario_pct", "consumo_agua_ml"]
 target = "status"
 
 X = df[features]
@@ -42,4 +42,4 @@ os.makedirs(os.path.dirname(METRICS_PATH), exist_ok=True)
 with open(METRICS_PATH, "w", encoding="utf-8") as f:
     json.dump(metrics, f, indent=4, ensure_ascii=False)
 
-print(f"Métricas salvas com sucesso em {METRICS_PATH}!")
+print(f"Métricas multiclasse salvas com sucesso em {METRICS_PATH}!")
