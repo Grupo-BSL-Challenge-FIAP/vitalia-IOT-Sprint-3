@@ -1,23 +1,23 @@
 {
-    "accuracy": 0.9975,
-    "precision_macro": 0.9965277777777778,
-    "recall_macro": 0.98989898989899,
-    "f1_macro": 0.9931265941737145,
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0,
     "confusion_matrix": [
         [
-            272,
+            273,
             0,
             0
         ],
         [
             0,
-            95,
+            94,
             0
         ],
         [
             0,
-            1,
-            32
+            0,
+            33
         ]
     ]
 }
