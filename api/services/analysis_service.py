@@ -1,9 +1,17 @@
+﻿import joblib
+import os
+import pandas as pd
 from api.services.history_service import HistoryService
-from api.services.ai_service import predict_pet_status
+
+PIPELINE_PATH = "models/trained/vitalia_pipeline.pkl"
 
 class AnalysisService:
     def __init__(self):
         self.history_service = HistoryService()
+        if os.path.exists(PIPELINE_PATH):
+            self.pipeline = joblib.load(PIPELINE_PATH)
+        else:
+            self.pipeline = None
 
     def analisar_comportamento(self, pet_id: int):
         ultimo = self.history_service.obter_ultimo_registro(pet_id)
@@ -26,14 +34,20 @@ class AnalysisService:
         else:
             tendencia_qualitativa = "ESTÁVEL"
 
-        pet_data = {
+        df_input = pd.DataFrame([{
             "peso_kg": float(ultimo.get("pesoKg", 10.0)),
-            "consumo_agua_ml": float(ultimo.get("consumoAguaMl", 500.0)),
             "atividade_diaria_pct": float(atividade_atual),
-            "sono_diario_pct": float(ultimo.get("sonoPct", 50))
-        }
-        
-        status_ml, explicabilidade = predict_pet_status(pet_data)
+            "sono_diario_pct": float(ultimo.get("sonoPct", 50)),
+            "consumo_agua_ml": float(ultimo.get("consumoAguaMl", 500.0))
+        }])
+
+        status_ml = "NORMAL"
+        if self.pipeline:
+            pred = self.pipeline.predict(df_input)
+            val = str(pred[0])
+            # Mapeia valores numéricos ou strings para o padrão esperado
+            mapping = {"0": "NORMAL", "1": "ATENÇÃO", "2": "ALERTA"}
+            status_ml = mapping.get(val, val)
 
         return {
             "petId": pet_id,
