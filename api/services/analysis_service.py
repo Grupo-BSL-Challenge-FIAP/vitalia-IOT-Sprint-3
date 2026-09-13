@@ -40,7 +40,7 @@ class AnalysisService:
             })
 
         df_input = pd.DataFrame([{
-            "idade_anos": float(ultimo.get("idade_anos", 3.0)),
+            "idade_anos": float(ultimo.get("idadeAnos", 3.0)), 
             "peso_kg": float(ultimo.get("pesoKg", 10.0)),
             "atividade_diaria_pct": float(ultimo.get("atividadePct", 50.0)),
             "sono_diario_pct": float(ultimo.get("sonoPct", 50.0)),

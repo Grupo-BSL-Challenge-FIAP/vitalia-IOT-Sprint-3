@@ -28,6 +28,7 @@ class HistoryService:
         return {
             "petId": int(ultimo['pet_id']),
             "data": str(ultimo['data']),
+            "idadeAnos": float(ultimo['idade_anos']),  # Adicionado aqui
             "pesoKg": float(ultimo['peso_kg']),
             "atividadePct": float(ultimo['atividade_diaria_pct']),
             "sonoPct": float(ultimo['sono_diario_pct']),
