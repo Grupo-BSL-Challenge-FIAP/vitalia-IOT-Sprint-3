@@ -62,6 +62,15 @@ class AnalysisService:
 
         tendencia_qualitativa = "CRESCENTE" if var_ativ > 5.0 else ("DECRESCENTE" if var_ativ < -5.0 else "ESTÁVEL")
 
+        linhas_justificativa = []
+        for alt in alteracoes:
+            nome_metrica = alt["metrica"].capitalize()
+            linhas_justificativa.append(
+                f"{nome_metrica}: média = {alt['mediaHistorica']}, atual = {alt['atual']}, variação = {alt['variacaoPct']}%"
+            )
+        
+        justificativa_detalhada = " | ".join(linhas_justificativa)
+
         return {
             "petId": pet_id,
             "mediaHistorica": media_atividade,
@@ -70,5 +79,5 @@ class AnalysisService:
             "tendencia": tendencia_qualitativa,
             "status": status_ml,
             "alteracoes": alteracoes,
-            "justificativaNumerica": f"Média histórica de atividade de {media_atividade}% com registro atual de {ativ_atual}%, resultando em uma variação de {var_ativ}% ({tendencia_qualitativa})."
+            "justificativaNumerica": justificativa_detalhada
         }
