@@ -100,13 +100,17 @@ Arquitetura futura: IoT → Backend → Banco → Vitalia AI
 (A integração física e automatizada IoT representa a evolução futura e ainda não está ativa nesta Sprint).
 
 ### 11. Endpoints Reais da API
-* GET /api/ai/pets/{pet_id}/dashboard
+* `GET /api/ai/pets/{pet_id}/insights`
 
-* GET /api/ai/pets/{pet_id}/insights
+* `GET /api/ai/pets/{pet_id}/dashboard`
 
-* POST /api/ai/pets/{pet_id}/recommendations
+* `GET /api/ai/pets/{pet_id}/recommendations`
 
-* POST /api/ai/pets/{pet_id}/ask
+* `POST /api/ai/pets/{pet_id}/predict`
+
+* `POST /api/ai/pets/{pet_id}/ask`
+
+* `GET /api/ai/pets/{pet_id}/trends`
 
 ### 12. Instalação, Execução & Testes
 Instalação das dependências:
