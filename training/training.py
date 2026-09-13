@@ -34,6 +34,7 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
     best_score = -1
     best_name = None
     best_model = None
+    scores = {}
     
     print("\nAvaliando candidatos (métrica: F1-Macro):")
     for name, model in candidates.items():
@@ -44,6 +45,7 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
         pipeline.fit(X_train, y_train)
         y_pred = pipeline.predict(X_test)
         score = f1_score(y_test, y_pred, average="macro", zero_division=0)
+        scores[name] = score
         print(f"-> {name}: {score:.4f}")
         
         if score > best_score or (score == best_score and name == "Random Forest"):
@@ -51,14 +53,23 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
             best_name = name
             best_model = pipeline
             
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    
+    os.makedirs("models", exist_ok=True)
+    plt.figure(figsize=(8, 5))
+    sns.barplot(x=list(scores.keys()), y=list(scores.values()), palette="Blues_d")
+    plt.ylim(0, 1.05)
+    plt.ylabel("F1-Score (Macro)")
+    plt.title("Comparação de Modelos - Vitalia AI")
+    plt.xticks(rotation=20)
+    plt.tight_layout()
+    plt.savefig("models/model_comparison.png")
+    plt.close()
+    print("[OK] Gráfico de comparação salvo em: models/model_comparison.png")
+
     print(f"\n[OK] Melhor modelo selecionado: {best_name} com F1-Macro de {best_score:.4f}")
     
     os.makedirs(os.path.dirname(model_output_path), exist_ok=True)
     joblib.dump(best_model, model_output_path)
     print(f"[OK] Pipeline salvo com sucesso em: {model_output_path}")
-
-if __name__ == "__main__":
-    PROCESSED_PATH = "data/processed/pets_dataset_ready.csv"
-    MODEL_PATH = "models/trained/vitalia_pipeline.pkl"
-    
-    train_and_save_pipeline(PROCESSED_PATH, MODEL_PATH)
