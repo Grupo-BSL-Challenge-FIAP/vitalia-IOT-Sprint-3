@@ -10,6 +10,10 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     pet_ids = np.random.randint(1001, 1100, num_records)
     pet_ids[0] = 1000
     
+    unique_pets = np.unique(pet_ids)
+    pet_ages = {pid: round(float(np.random.uniform(0.5, 15)), 1) for pid in unique_pets}
+    idades_fixas = [pet_ages[pid] for pid in pet_ids]
+    
     datas_base = []
     pet_counters = {}
     
@@ -26,7 +30,7 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     data = {
         'pet_id': pet_ids,
         'data': datas_base,
-        'idade_anos': np.random.uniform(0.5, 15, num_records).round(1),
+        'idade_anos': idades_fixas,
         'peso_kg': (5.0 + np.random.uniform(0.5, 3.0, num_records) * np.random.uniform(0.8, 1.5, num_records)).round(2),
         'atividade_diaria_pct': np.random.normal(70, 20, num_records).clip(0, 100).round(1),
         'sono_diario_pct': np.random.normal(60, 15, num_records).clip(0, 100).round(1),
@@ -44,6 +48,7 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     
     idx_nulos = np.random.choice(df.index, size=50, replace=False)
     df.loc[idx_nulos, 'peso_kg'] = np.nan
+    
     
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     df.to_csv(filepath, index=False)
