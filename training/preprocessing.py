@@ -52,12 +52,15 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
 
 
 def preprocess_data(raw_filepath: str, processed_filepath: str):
-    """Limpa, trata valores nulos e garante que o pet 1000 e seu histórico estejam presentes."""
+    """Limpa, trata valores nulos usando mediana por pet (com fallback global) e remove duplicatas de pet_id + data."""
     print("Iniciando pré-processamento com histórico temporal...")
     df = pd.read_csv(raw_filepath)
     
-    df['peso_kg'] = df['peso_kg'].fillna(df['peso_kg'].median())
-    df = df.drop_duplicates()
+    global_median = df['peso_kg'].median()
+    df['peso_kg'] = df.groupby('pet_id')['peso_kg'].transform(lambda x: x.fillna(x.median()))
+    df['peso_kg'] = df['peso_kg'].fillna(global_median)
+    
+    df = df.drop_duplicates(subset=['pet_id', 'data'], keep='last')
     
     if 1000 not in df['pet_id'].values:
         linhas_pet_1000 = pd.DataFrame({
