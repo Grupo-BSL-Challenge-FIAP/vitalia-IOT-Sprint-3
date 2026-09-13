@@ -43,9 +43,13 @@ class HistoryService:
         if pet_df.empty:
             return {}
         
+        pet_df = pet_df.sort_values(by='data', ascending=False)
+        
+        historical_df = pet_df.iloc[1:] if len(pet_df) > 1 else pet_df
+        
         return {
-            "mediaPesoKg": float(pet_df['peso_kg'].mean().round(2)),
-            "mediaAtividadePct": float(pet_df['atividade_diaria_pct'].mean().round(1)),
-            "mediaSonoPct": float(pet_df['sono_diario_pct'].mean().round(1)),
-            "mediaConsumoAguaMl": float(pet_df['consumo_agua_ml'].mean().round(1))
+            "mediaPesoKg": float(historical_df['peso_kg'].mean().round(2)),
+            "mediaAtividadePct": float(historical_df['atividade_diaria_pct'].mean().round(1)),
+            "mediaSonoPct": float(historical_df['sono_diario_pct'].mean().round(1)),
+            "mediaConsumoAguaMl": float(historical_df['consumo_agua_ml'].mean().round(1))
         }
