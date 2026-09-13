@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from json import JSONDecodeError
 
 from api.controllers.pet_controller import router as pet_router
-from api.security import verificar_autenticacao
+from api.security import verificar_autenticacaogit 
 
 load_dotenv()
 
