@@ -3,7 +3,11 @@
 A **Vitalia AI** é uma API desenvolvida em FastAPI que une Machine Learning, Inteligência Artificial Generativa (Google Gemini) e Análise de Dados para monitorar, prever e gerar insights sobre o bem-estar e comportamento de pets.
 
 ---
-
+Link API Local
+```Bash
+http://127.0.0.1:8000/docs
+```
+---
 👥 Integrantes do Grupo
 
 <table>
