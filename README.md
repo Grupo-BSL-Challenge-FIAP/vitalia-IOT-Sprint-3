@@ -7,6 +7,10 @@ Link API Local
 ```Bash
 http://127.0.0.1:8000/docs
 ```
+Link Youtube
+```Bash
+https://youtu.be/oiDqsuIKKLs
+```
 ---
 👥 Integrantes do Grupo
 
