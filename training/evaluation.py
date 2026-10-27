@@ -20,7 +20,16 @@ if not os.path.exists(DATA_PATH):
 pipeline = joblib.load(PIPELINE_PATH)
 
 df = pd.read_csv(DATA_PATH)
-features = ["idade_anos", "peso_kg", "atividade_diaria_pct", "sono_diario_pct", "consumo_agua_ml"]
+features = [
+    "idade_anos", 
+    "peso_kg", 
+    "atividade_diaria_pct", 
+    "sono_diario_pct", 
+    "frequencia_cardiaca_bpm", 
+    "frequencia_respiratoria", 
+    "temperatura_c", 
+    "score_comportamento"
+]
 target = "status"
 
 X = df[features]
@@ -46,12 +55,11 @@ with open(METRICS_PATH, "w", encoding="utf-8") as f:
 
 print(f"Métricas multiclasse salvas com sucesso em {METRICS_PATH}!")
 
-
 plt.figure(figsize=(6, 5))
 cm = confusion_matrix(y_test, y_pred)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-            xticklabels=["NORMAL", "ATENÇÃO", "ALERTA"], 
-            yticklabels=["NORMAL", "ATENÇÃO", "ALERTA"])
+            xticklabels=["NORMAL", "ATTENTION", "RISK"], 
+            yticklabels=["NORMAL", "ATTENTION", "RISK"])
 plt.xlabel("Previsto")
 plt.ylabel("Real")
 plt.title("Matriz de Confusão Multiclasse")

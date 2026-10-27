@@ -62,16 +62,16 @@ Tutores de pets, equipes veterinárias e plataformas de gestão de saúde animal
 Registros históricos de monitoramento, peso, métricas de atividade diária, padrão de sono e consumo de água gerados por simulações do sistema.
 
 ### 5. Modelo Selecionado & Justificativa
-* Modelo: vitalia_pipeline.pkl (Pipeline unificado de Machine Learning).
+* Modelo Selecionado: Decision Tree Classifier (guardado em models/trained/vitalia_pipeline.pkl).
 
-* Justificativa: Escolhido pela robustez, eficiência computacional e padronização das etapas de transformação e predição em dados tabulares de telemetria.
+* Justificativa: Selecionado automaticamente durante a comparação de modelos por apresentar o melhor desempenho com F1-Score Macro de 0.9035.
 
 ### 6. Métricas Reais (Geradas pelo evaluation.py)
-* Accuracy  = 1.0
+* Accuracy  = ~0.90 (90.35%)
 * Precision = 1.0
 * Recall    = 1.0
-* F1        = 1.0
-* Matriz de Confusão: Validada nas classes de monitoramento (Normal, Atenção, Alerta).
+* F1(Macro) = 0.90350
+* Matriz de Confusão: Validada nas classes de monitoramento padronizadas (NORMAL, ATTENTION, RISK).
 
 ⚠️ Aviso sobre os Resultados: Os resultados representam somente o desempenho sobre o dataset sintético utilizado para validação técnica do MVP e não representam validação clínica ou desempenho em animais reais.
 
@@ -215,13 +215,12 @@ A integração fi­sica e automatizada (ESP32 -> Oracle -> IA) representa a evol
 ### 17. Detalhes Técnicos, Machine Learning & Pré-processamento
 * **Histórico Individual por Pet**: Armazenamento e consulta de dados segregados por ID do pet.
 * **Médias, Tendências e Alterações**: Cálculo automatizado de médias históricas, rastreamento de tendências temporais e identificação de desvios comportamentais.
-* **Features & Preprocessing**: Atributos de telemetria focados em idade, peso, atividade diária, padrão de sono e consumo de água, submetidos a etapas de limpeza e validação estrutural.
-* **Random Forest & Motivo da Escolha**: O modelo utiliza o algoritmo **Random Forest** em virtude de sua alta robustez, excelente desempenho preditivo em dados tabulares e capacidade de capturar relações não lineares entre as variáveis de saúde animal.
-* **Regressão e Previsão**: Tarefas de modelagem preditiva aplicadas à estimativa contínua de métricas.
-* **Ambiente de Execução**: Projeto configurado, executado e validado nativamente em **Python 3.11**.
+* **Features & Preprocessing**: Atributos de telemetria focados em idade, peso, atividade diária, padrão de sono e sinais vitais (frequência cardíaca, frequência respiratória, temperatura e score comportamental), submetidos a etapas de limpeza e validação estrutural.
+* **Decision Tree & Motivo da Escolha**: O modelo utiliza o algoritmo **Decision Tree Classifier** em virtude do seu excelente desempenho preditivo em dados tabulares, alta interpretabilidade e melhor resultado no benchmarking entre os modelos avaliados.
+* **Ambiente de Execução**: Projeto configurado, executado e validado nativamente em **Python**.
 
-### 18. Random Forest
-* O algoritmo **Random Forest** foi escolhido por sua alta robustez, excelente capacidade de generalização e desempenho preditivo de excelência (alcançando métrica F1-Macro de 1.0000) em dados tabulares de saúde e comportamento animal, garantindo previsões mais estáveis e seguras por meio de sua arquitetura de *ensemble*
+### 18. Decision Tree
+* O algoritmo **Decision Tree** foi o modelo vencedor na avaliação comparativa (alcançando a métrica F1-Macro de 0.9035), superando os outros algoritmos candidatos (Logistic Regression, Random Forest, KNN e SVM) na classificação do estado de saúde dos pets.
 
 ### 19. Nota sobre a Avaliação de Regressão
 As métricas de avaliação de regressão (MAE, MSE, RMSE e \(R^2\)) calculadas no projeto representam o ajuste dos modelos ao histórico simulado do MVP.
