@@ -4,6 +4,9 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from json import JSONDecodeError
+from pydantic import BaseModel
+from typing import List
+from api.services.analysis_service import AnalysisService
 
 from api.controllers.pet_controller import router as pet_router
 from api.security import verificar_autenticacao
@@ -14,6 +17,23 @@ ENV = os.getenv("APP_ENV", "development")
 SECRET_KEY = os.getenv("API_SECRET_KEY")
 if not SECRET_KEY:
     raise RuntimeError("API_SECRET_KEY não definida nas variáveis de ambiente.")
+
+
+class MeasurementInput(BaseModel):
+    petId: int
+    activityLevel: float
+    sleepHours: float
+    heartRate: float
+    respiratoryRate: float
+    temperature: float
+    behaviorScore: float
+
+class AIAnalysisResponse(BaseModel):
+    petId: int
+    status: str
+    confidence: float
+    summary: str
+    recommendations: List[str]
 
 app = FastAPI(
     title="Vitalia AI API", 
@@ -47,7 +67,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code=422,
         content={"detail": erros_personalizados, "mensagem": "Erro de validação nos dados enviados."}
     )
-    
 
 @app.exception_handler(JSONDecodeError)
 async def json_decode_exception_handler(request: Request, exc: JSONDecodeError):
@@ -58,3 +77,42 @@ async def json_decode_exception_handler(request: Request, exc: JSONDecodeError):
             "mensagem": "Erro de validação nos dados enviados."
         }
     )
+
+
+
+
+analysis_service = AnalysisService()
+
+@app.post("/api/ai/analyze", response_model=AIAnalysisResponse)
+def analyze_measurement(data: MeasurementInput):
+   
+    resultado_analise = analysis_service.analisar_comportamento(data.petId)
+    
+    
+    if not resultado_analise:
+        return {
+            "petId": data.petId,
+            "status": "NORMAL",
+            "confidence": 0.85,
+            "summary": "Primeiro registo do pet processado com sucesso. Sem histórico anterior para comparação.",
+            "recommendations": ["Continuar com a rotina normal de monitorização."]
+        }
+    
+    status = resultado_analise.get("status", "NORMAL")
+    justificativa = resultado_analise.get("justificativaNumerica", "Análise efetuada.")
+    alteracoes = resultado_analise.get("alteracoes", [])
+    
+    recomendacoes = [
+        "Continuar monitorizando nas próximas horas.",
+        "Caso a alteração persista ou o comportamento mude drasticamente, considerar avaliação veterinária."
+    ]
+    if status == "RISK":
+        recomendacoes.insert(0, "⚠️ ATENÇÃO: Os indicadores apontam para um desvio crítico em relação ao histórico.")
+
+    return {
+        "petId": data.petId,
+        "status": status,
+        "confidence": 0.92,  
+        "summary": justificativa,
+        "recommendations": recomendacoes
+    }
