@@ -79,8 +79,6 @@ async def json_decode_exception_handler(request: Request, exc: JSONDecodeError):
     )
 
 
-
-
 analysis_service = AnalysisService()
 
 @app.post("/api/ai/analyze", response_model=AIAnalysisResponse)
