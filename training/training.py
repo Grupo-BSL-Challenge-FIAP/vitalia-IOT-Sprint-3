@@ -15,7 +15,16 @@ def train_and_save_pipeline(processed_filepath: str, model_output_path: str):
     print("Iniciando carregamento e comparacao de modelos candidatos...")
     df = pd.read_csv(processed_filepath)
     
-    features = ["idade_anos", "peso_kg", "atividade_diaria_pct", "sono_diario_pct", "consumo_agua_ml"]
+    features = [
+        "idade_anos", 
+        "peso_kg", 
+        "atividade_diaria_pct", 
+        "sono_diario_pct", 
+        "frequencia_cardiaca_bpm", 
+        "frequencia_respiratoria", 
+        "temperatura_c", 
+        "score_comportamento"
+    ]
     X = df[features]
     y = df['status']
     

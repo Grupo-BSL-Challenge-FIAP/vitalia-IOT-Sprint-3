@@ -4,11 +4,10 @@ import os
 from datetime import datetime, timedelta
 
 def generate_synthetic_data(filepath: str, num_records: int = 2000):
-    """Gera dados simulados de comportamento e saúde de pets com histórico temporal para o MVP."""
+    """Gera dados simulados de comportamento e saúde alinhados ao schema Oracle."""
     np.random.seed(42)
     
     pet_ids = np.random.randint(1001, 1100, num_records)
-    
     for i in range(10):
         pet_ids[i] = 1000
     
@@ -26,7 +25,6 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     
     datas_base = []
     pet_counters = {}
-    
     hoje = datetime.now()
     for i, pid in enumerate(pet_ids):
         if pid == 1000:
@@ -41,19 +39,22 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
                     pet_counters[pid] = hoje - timedelta(days=np.random.randint(0, 5))
             datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
 
+    # Features alinhadas com o Oracle
     atividade_diaria = [round(float(np.clip(np.random.normal(70, 10), 10, 100)), 2) for _ in range(num_records)]
     sono_diario = [round(float(np.clip(np.random.normal(50, 10), 10, 90)), 2) for _ in range(num_records)]
-    consumo_agua = [round(float(np.clip(np.random.normal(500, 100), 100, 2000)), 2) for _ in range(num_records)]
-
+    freq_cardiaca = [round(float(np.clip(np.random.normal(100, 20), 50, 180)), 1) for _ in range(num_records)]
+    freq_respiratoria = [round(float(np.clip(np.random.normal(24, 6), 10, 60)), 1) for _ in range(num_records)]
+    temperatura = [round(float(np.clip(np.random.normal(38.5, 0.5), 36.5, 41.0)), 1) for _ in range(num_records)]
+    behavior_score = [round(float(np.clip(np.random.normal(8, 2), 1, 10)), 1) for _ in range(num_records)]
 
     status = []
-    for ativ, sono, agua in zip(atividade_diaria, sono_diario, consumo_agua):
-        if np.random.rand() < 0.05:  
+    for ativ, sono, fc, fr, temp, score in zip(atividade_diaria, sono_diario, freq_cardiaca, freq_respiratoria, temperatura, behavior_score):
+        if np.random.rand() < 0.05: 
             st = np.random.choice(["NORMAL", "ATTENTION", "RISK"], p=[0.7, 0.2, 0.1])
         else:
-            if ativ < 40 or agua < 200 or sono < 20:
+            if temp > 39.5 or temp < 37.0 or fc > 150 or fr > 45 or score < 4 or ativ < 30:
                 st = "RISK"
-            elif ativ < 60 or agua < 350 or sono < 35:
+            elif temp > 39.0 or temp < 37.5 or fc > 120 or fr > 35 or score < 6 or ativ < 50:
                 st = "ATTENTION"
             else:
                 st = "NORMAL"
@@ -66,7 +67,10 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
         'peso_kg': pesos_variados,
         'atividade_diaria_pct': atividade_diaria,
         'sono_diario_pct': sono_diario,
-        'consumo_agua_ml': consumo_agua,
+        'frequencia_cardiaca_bpm': freq_cardiaca,
+        'frequencia_respiratoria': freq_respiratoria,
+        'temperatura_c': temperatura,
+        'score_comportamento': behavior_score,
         'status': status
     })
     
@@ -75,8 +79,7 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
 
 
 def preprocess_data(raw_filepath: str, processed_filepath: str):
-    """Limpa, trata valores nulos usando mediana por pet (com fallback global) e remove duplicatas de pet_id + data."""
-    print("Iniciando pré-processamento com histórico temporal...")
+    """Limpa e formata os dados brutos."""
     df = pd.read_csv(raw_filepath)
     
     global_median = df['peso_kg'].median()
@@ -95,7 +98,10 @@ def preprocess_data(raw_filepath: str, processed_filepath: str):
             'peso_kg': [12.5, 12.6, 12.4, 12.5, 12.7],
             'atividade_diaria_pct': [75.0, 80.0, 70.0, 78.0, 82.0],
             'sono_diario_pct': [50.0, 45.0, 55.0, 48.0, 52.0],
-            'consumo_agua_ml': [500.0, 550.0, 480.0, 520.0, 530.0],
+            'frequencia_cardiaca_bpm': [95.0, 98.0, 92.0, 96.0, 94.0],
+            'frequencia_respiratoria': [22.0, 24.0, 20.0, 23.0, 21.0],
+            'temperatura_c': [38.4, 38.5, 38.3, 38.5, 38.4],
+            'score_comportamento': [8.5, 9.0, 8.0, 8.8, 9.1],
             'status': ["NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL"]
         })
         df = pd.concat([df, linhas_pet_1000], ignore_index=True)

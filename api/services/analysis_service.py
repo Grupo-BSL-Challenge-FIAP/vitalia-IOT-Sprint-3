@@ -24,7 +24,7 @@ class AnalysisService:
             ("peso", float(ultimo.get("pesoKg", 0)), float(medias.get("mediaPesoKg", 0))),
             ("atividade", float(ultimo.get("atividadePct", 0)), float(medias.get("mediaAtividadePct", 0))),
             ("sono", float(ultimo.get("sonoPct", 0)), float(medias.get("mediaSonoPct", 0))),
-            ("consumoAgua", float(ultimo.get("consumoAguaMl", 0)), float(medias.get("mediaConsumoAguaMl", 0)))
+            ("temperatura", float(ultimo.get("temperaturaC", 38.5)), float(medias.get("mediaTemperaturaC", 38.5)))
         ]
 
         alteracoes = []
@@ -44,7 +44,10 @@ class AnalysisService:
             "peso_kg": float(ultimo.get("pesoKg", 10.0)),
             "atividade_diaria_pct": float(ultimo.get("atividadePct", 50.0)),
             "sono_diario_pct": float(ultimo.get("sonoPct", 50.0)),
-            "consumo_agua_ml": float(ultimo.get("consumoAguaMl", 500.0))
+            "frequencia_cardiaca_bpm": float(ultimo.get("frequenciaCardiacaBpm", 100.0)),
+            "frequencia_respiratoria": float(ultimo.get("frequenciaRespiratoria", 24.0)),
+            "temperatura_c": float(ultimo.get("temperaturaC", 38.5)),
+            "score_comportamento": float(ultimo.get("scoreComportamento", 8.0))
         }])
 
         status_ml = "NORMAL"
