@@ -44,7 +44,20 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
     atividade_diaria = [round(float(np.clip(np.random.normal(70, 10), 10, 100)), 2) for _ in range(num_records)]
     sono_diario = [round(float(np.clip(np.random.normal(50, 10), 10, 90)), 2) for _ in range(num_records)]
     consumo_agua = [round(float(np.clip(np.random.normal(500, 100), 100, 2000)), 2) for _ in range(num_records)]
-    status = np.random.choice([0, 1, 2], size=num_records, p=[0.7, 0.2, 0.1])
+
+
+    status = []
+    for ativ, sono, agua in zip(atividade_diaria, sono_diario, consumo_agua):
+        if np.random.rand() < 0.05:  
+            st = np.random.choice(["NORMAL", "ATTENTION", "RISK"], p=[0.7, 0.2, 0.1])
+        else:
+            if ativ < 40 or agua < 200 or sono < 20:
+                st = "RISK"
+            elif ativ < 60 or agua < 350 or sono < 35:
+                st = "ATTENTION"
+            else:
+                st = "NORMAL"
+        status.append(st)
     
     df = pd.DataFrame({
         'pet_id': pet_ids,
@@ -83,7 +96,7 @@ def preprocess_data(raw_filepath: str, processed_filepath: str):
             'atividade_diaria_pct': [75.0, 80.0, 70.0, 78.0, 82.0],
             'sono_diario_pct': [50.0, 45.0, 55.0, 48.0, 52.0],
             'consumo_agua_ml': [500.0, 550.0, 480.0, 520.0, 530.0],
-            'status': [0, 0, 0, 0, 0]
+            'status': ["NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL"]
         })
         df = pd.concat([df, linhas_pet_1000], ignore_index=True)
 

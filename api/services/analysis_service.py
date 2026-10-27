@@ -51,7 +51,7 @@ class AnalysisService:
         if self.pipeline:
             pred = self.pipeline.predict(df_input)
             val = str(pred[0])
-            mapping = {"0": "NORMAL", "1": "ATENÇÃO", "2": "ALERTA"}
+            mapping = {"0": "NORMAL", "1": "ATTENTION", "2": "RISK"}
             status_ml = mapping.get(val, val)
 
         media_atividade = float(medias.get("mediaAtividadePct", 0))
