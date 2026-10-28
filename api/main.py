@@ -114,3 +114,10 @@ def analyze_measurement(data: MeasurementInput):
         "summary": justificativa,
         "recommendations": recomendacoes
     }
+
+@app.get("/health", tags=["Health"])
+def health_check():
+    return {
+        "status": "online",
+        "message": "Vitalia AI API está a funcionar perfeitamente!"
+    }
