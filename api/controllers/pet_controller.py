@@ -160,7 +160,7 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
             peso=dados_pet.peso_kg,
             atividade=dados_pet.atividade_diaria_pct,
             sono=dados_pet.sono_diario_pct,
-            consumo_agua=getattr(dados_pet, 'consumo_agua_ml', 500.0) # valor por omissão caso não venha preenchido
+            consumo_agua=getattr(dados_pet, 'consumo_agua_ml', 500.0) 
         )
     except Exception as e:
         print(f"Erro ao salvar histórico: {e}")
