@@ -31,8 +31,7 @@ class PetDataInput(BaseModel):
         return self
 
 class QuestionInput(BaseModel):
-    pergunta: str
-    dados_atuais: PetDataInput 
+    pergunta: str = Field(..., min_length=1, description="A pergunta não pode estar vazia.")
 
 class InsightOutput(BaseModel):
     pet_id: str

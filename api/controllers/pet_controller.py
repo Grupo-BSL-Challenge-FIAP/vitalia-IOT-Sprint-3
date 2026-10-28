@@ -11,6 +11,7 @@ from api.services.analysis_service import AnalysisService
 from api.services.history_service import HistoryService
 from api.services.llm_service import llm_service
 from api.security import verificar_autenticacao
+from api.schemas.pet_schemas import PetDataInput, QuestionInput
 
 router = APIRouter(prefix="/api/ai/pets", tags=["Pets AI"])
 
@@ -153,6 +154,18 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
     except ValueError:
         pid_formatted = pet_id
 
+    try:
+        history_service.salvar_registro(
+            pet_id=int(pet_id),
+            peso=dados_pet.peso_kg,
+            atividade=dados_pet.atividade_diaria_pct,
+            sono=dados_pet.sono_diario_pct,
+            consumo_agua=getattr(dados_pet, 'consumo_agua_ml', 500.0) # valor por omissão caso não venha preenchido
+        )
+    except Exception as e:
+        print(f"Erro ao salvar histórico: {e}")
+    # --------------------------------------------------------
+
     return {
         "petId": pid_formatted,
         "classId": class_id,
@@ -161,11 +174,15 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
     }
 
 @router.post("/{pet_id}/ask")
-async def perguntar_ao_pet(pet_id: str, pergunta: str, credentials: str = Depends(verificar_autenticacao)):
+async def perguntar_ao_pet(pet_id: str, body: QuestionInput, credentials: str = Depends(verificar_autenticacao)):
     try:
         pid_int = int(pet_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="ID inválido.")
+        
+    pergunta_texto = body.pergunta.strip()
+    if not pergunta_texto:
+        raise HTTPException(status_code=422, detail="A pergunta não pode estar vazia.")
         
     ultimo = history_service.obter_ultimo_registro(pid_int)
     if not ultimo:
@@ -196,8 +213,13 @@ async def perguntar_ao_pet(pet_id: str, pergunta: str, credentials: str = Depend
         "alteracoes_identificadas": resultado_analise.get("alteracoes", [])
     }
     
-    resposta = llm_service.answer(contexto, pergunta)
-    return {"pet_id": pet_id, "resposta": resposta}
+    resposta = llm_service.answer(contexto, pergunta_texto)
+    
+    return {
+        "petId": pid_int,
+        "pergunta": pergunta_texto,
+        "resposta": resposta
+    }
 
 @router.get("/{pet_id}/trends")
 async def get_pet_trends(pet_id: str, credentials: str = Depends(verificar_autenticacao)):
