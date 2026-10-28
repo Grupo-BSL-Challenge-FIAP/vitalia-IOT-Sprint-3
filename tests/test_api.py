@@ -203,3 +203,11 @@ def test_consistencia_status_entre_endpoints():
         args, _ = mock_llm.answer.call_args
         contexto_enviado = args[0]
         assert contexto_enviado.get("classificacao") == "ATENÇÃO"
+
+
+@app.get("/health", tags=["Health"])
+def health_check():
+    return {
+        "status": "online",
+        "message": "Vitalia AI API está a funcionar perfeitamente!"
+    }
