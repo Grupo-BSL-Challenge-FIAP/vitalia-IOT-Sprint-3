@@ -2,16 +2,25 @@
 import time
 from dotenv import load_dotenv
 from google import genai
-from google.genai.errors import ServerError
+from google.genai.errors import APIError, ServerError
 
 load_dotenv()
 
 class LLMService:
     def __init__(self):
-        api_key = os.getenv("GEMINI_API_KEY")
-        self.client = genai.Client(api_key=api_key) if api_key else genai.Client()
+        self.api_key = os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
+            self.client = None
+        else:
+            try:
+                self.client = genai.Client(api_key=self.api_key)
+            except Exception:
+                self.client = None
 
     def answer(self, contexto: str, pergunta: str) -> str:
+        if not self.client:
+            return f"[Modo Fallback - IA Indisponível/Sem Chave] Com base nos dados analisados do pet:\n{contexto}\n\nResposta padrão: Não foi possível contactar o serviço de IA no momento, mas os dados do pet encontram-se registados e seguros no sistema."
+
         prompt = f"""
 Você é o assistente virtual da Vitalia AI. A Vitalia AI é um apoio ao acompanhamento e à decisão.
 
@@ -28,16 +37,22 @@ Contexto estruturado do pet:
 Pergunta do tutor:
 {pergunta}
 """
-        max_retries = 3
+        max_retries = 2
         for tentativa in range(max_retries):
             try:
                 response = self.client.models.generate_content(
                     model="gemini-3.8-flash",
                     contents=prompt
                 )
-                return response.text
-            except ServerError as e:
+                if response and response.text:
+                    return response.text
+            except (ServerError, APIError) as e:
                 if tentativa == max_retries - 1:
-                    raise e
-                time.sleep(2) 
+                    break
+                time.sleep(1)
+            except Exception:
+                break
+
+        return f"[Modo Fallback de Segurança] O serviço de IA encontra-se temporariamente indisponível. Resumo baseado no contexto do pet:\n{contexto}\n\nRecomendação: Verifique os parâmetros vitais registados e consulte um médico veterinário em caso de dúvida."
+
 llm_service = LLMService()
