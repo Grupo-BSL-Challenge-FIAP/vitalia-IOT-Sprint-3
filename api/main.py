@@ -83,22 +83,28 @@ analysis_service = AnalysisService()
 
 @app.post("/api/ai/analyze", response_model=AIAnalysisResponse)
 def analyze_measurement(data: MeasurementInput):
+    payload = {
+        "activityLevel": data.activityLevel,
+        "sleepHours": data.sleepHours,
+        "heartRate": data.heartRate,
+        "respiratoryRate": data.respiratoryRate,
+        "temperature": data.temperature,
+        "behaviorScore": data.behaviorScore
+    }
    
-    resultado_analise = analysis_service.analisar_comportamento(data.petId)
-    
+    resultado_analise = analysis_service.analisar_comportamento(data.petId, payload=payload)
     
     if not resultado_analise:
         return {
             "petId": data.petId,
             "status": "NORMAL",
             "confidence": 0.85,
-            "summary": "Primeiro registo do pet processado com sucesso. Sem histórico anterior para comparação.",
+            "summary": "Registo do pet processado com sucesso utilizando a nova medição.",
             "recommendations": ["Continuar com a rotina normal de monitorização."]
         }
     
     status = resultado_analise.get("status", "NORMAL")
-    justificativa = resultado_analise.get("justificativaNumerica", "Análise efetuada.")
-    alteracoes = resultado_analise.get("alteracoes", [])
+    justificativa = resultado_analise.get("justificativaNumerica", "Análise efetuada com base na nova medição.")
     
     recomendacoes = [
         "Continuar monitorizando nas próximas horas.",

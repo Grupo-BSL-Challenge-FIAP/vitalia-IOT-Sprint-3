@@ -13,12 +13,46 @@ class AnalysisService:
         else:
             self.pipeline = None
 
-    def analisar_comportamento(self, pet_id: int):
+    def analisar_comportamento(self, pet_id: int, payload: dict = None):
         ultimo = self.history_service.obter_ultimo_registro(pet_id)
         medias = self.history_service.calcular_medias_historicas(pet_id)
-        
-        if not ultimo or not medias:
+
+        if not ultimo and not payload:
             return None
+        
+        if not ultimo:
+            ultimo = {
+                "idadeAnos": 3.0,
+                "pesoKg": 10.0,
+                "atividadePct": 50.0,
+                "sonoHoras": 12.0,
+                "frequenciaCardiacaBpm": 100.0,
+                "frequenciaRespiratoria": 24.0,
+                "temperaturaC": 38.5,
+                "scoreComportamento": 8.0
+            }
+
+        if payload:
+            if "activityLevel" in payload:
+                ultimo["atividadePct"] = float(payload["activityLevel"])
+            if "sleepHours" in payload:
+                ultimo["sonoHoras"] = float(payload["sleepHours"])
+            if "heartRate" in payload:
+                ultimo["frequenciaCardiacaBpm"] = float(payload["heartRate"])
+            if "respiratoryRate" in payload:
+                ultimo["frequenciaRespiratoria"] = float(payload["respiratoryRate"])
+            if "temperature" in payload:
+                ultimo["temperaturaC"] = float(payload["temperature"])
+            if "behaviorScore" in payload:
+                ultimo["scoreComportamento"] = float(payload["behaviorScore"])
+
+        if not medias:
+            medias = {
+                "mediaPesoKg": ultimo.get("pesoKg", 10.0),
+                "mediaAtividadePct": ultimo.get("atividadePct", 50.0),
+                "mediaSonoHoras": ultimo.get("sonoHoras", 12.0),
+                "mediaTemperaturaC": ultimo.get("temperaturaC", 38.5)
+            }
             
         metricas_map = [
             ("peso", float(ultimo.get("pesoKg", 0)), float(medias.get("mediaPesoKg", 0))),
