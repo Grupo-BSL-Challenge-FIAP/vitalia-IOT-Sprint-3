@@ -16,8 +16,7 @@ VALID_PAYLOAD = {
     "idade_anos": 3.5,
     "peso_kg": 15.0,
     "atividade_diaria_pct": 15.0,
-    "sono_diario_pct": 95.0,
-    "consumo_agua_ml": 200.0
+    "sono_horas": 12.0
 }
 
 def test_predict_sem_autenticacao():
@@ -41,10 +40,9 @@ def test_predict_percentual_acima_100():
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
-def test_predict_sono_agua_invalidos():
+def test_predict_sono_invalido():
     payload_invalido = VALID_PAYLOAD.copy()
-    payload_invalido["sono_diario_pct"] = 120.0
-    payload_invalido["consumo_agua_ml"] = -50.0
+    payload_invalido["sono_horas"] = 25.0
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
@@ -123,8 +121,8 @@ def test_ask_pet_dinamico():
          patch("api.controllers.pet_controller.history_service") as mock_history, \
          patch("api.controllers.pet_controller.analysis_service") as mock_analysis:
     
-        mock_history.obter_ultimo_registro.return_value = {"pesoKg": 15.0, "atividadePct": 50.0, "sonoPct": 60.0, "consumoAguaMl": 400.0}
-        mock_history.calcular_medias_historicas.return_value = {"mediaPesoKg": 15.0, "mediaAtividadePct": 50.0, "mediaSonoPct": 60.0, "mediaConsumoAguaMl": 400.0}
+        mock_history.obter_ultimo_registro.return_value = {"pesoKg": 15.0, "atividadePct": 50.0, "sonoHoras": 12.0}
+        mock_history.calcular_medias_historicas.return_value = {"mediaPesoKg": 15.0, "mediaAtividadePct": 50.0, "mediaSonoHoras": 12.0}
         mock_analysis.analisar_comportamento.return_value = {"status": "NORMAL", "tendencia": "ESTÁVEL", "alteracoes": []}
         mock_llm.answer.return_value = "Resposta personalizada baseada no histórico do pet."
     
@@ -166,10 +164,10 @@ def test_consistencia_status_entre_endpoints():
         }
         
         mock_history.obter_ultimo_registro.return_value = {
-            "pesoKg": 15.0, "atividadePct": 40.0, "sonoPct": 80.0, "consumoAguaMl": 300.0
+            "pesoKg": 15.0, "atividadePct": 40.0, "sonoHoras": 12.0
         }
         mock_history.calcular_medias_historicas.return_value = {
-            "mediaPesoKg": 15.0, "mediaAtividadePct": 50.0, "mediaSonoPct": 80.0, "mediaConsumoAguaMl": 300.0
+            "mediaPesoKg": 15.0, "mediaAtividadePct": 50.0, "mediaSonoHoras": 12.0
         }
         mock_history.obter_historico_pet.return_value = [
             {"data": "2026-01-01", "pesoKg": 15.0},

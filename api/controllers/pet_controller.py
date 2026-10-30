@@ -159,12 +159,10 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
             pet_id=int(pet_id),
             peso=dados_pet.peso_kg,
             atividade=dados_pet.atividade_diaria_pct,
-            sono=dados_pet.sono_diario_pct,
-            consumo_agua=getattr(dados_pet, 'consumo_agua_ml', 500.0) 
+            sono=dados_pet.sono_horas
         )
     except Exception as e:
         print(f"Erro ao salvar histórico: {e}")
-    # --------------------------------------------------------
 
     return {
         "petId": pid_formatted,
@@ -199,14 +197,12 @@ async def perguntar_ao_pet(pet_id: str, body: QuestionInput, credentials: str = 
         "dados_atuais": {
             "peso": ultimo.get('pesoKg'),
             "atividade": ultimo.get('atividadePct'),
-            "sono": ultimo.get('sonoPct'),
-            "consumo_de_agua": ultimo.get('consumoAguaMl')
+            "sono": ultimo.get('sonoHoras')
         },
         "medias_historicas": {
             "peso": medias.get('mediaPesoKg'),
             "atividade": medias.get('mediaAtividadePct'),
-            "sono": medias.get('mediaSonoPct'),
-            "consumo_de_agua": medias.get('mediaConsumoAguaMl')
+            "sono": medias.get('mediaSonoHoras')
         },
         "tendencia": resultado_analise.get("tendencia"),
         "classificacao": resultado_analise.get("status"),
