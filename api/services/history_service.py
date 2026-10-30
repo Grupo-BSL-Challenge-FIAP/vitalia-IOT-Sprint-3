@@ -7,13 +7,15 @@ class HistoryService:
         self.repository = repository or PetRepository()
 
     def _calcular_idade(self, data_nascimento_str):
+        if not data_nascimento_str:
+            raise ValueError("Data de nascimento (BIRTH_DATE) não encontrada para o cálculo da idade real.")
         try:
             data_nasc = datetime.strptime(str(data_nascimento_str)[:10], "%Y-%m-%d")
             hoje = datetime.now()
             idade = hoje.year - data_nasc.year - ((hoje.month, hoje.day) < (data_nasc.month, data_nasc.day))
             return max(0, idade)
-        except Exception:
-            return 3.0
+        except Exception as e:
+            raise ValueError(f"Erro ao processar a data de nascimento: {e}")
 
     def obter_ultimo_registro(self, pet_id: int):
         pet_info = self.repository.obter_informacoes_pet(pet_id)
@@ -23,13 +25,19 @@ class HistoryService:
             return None
             
         ultimo = medicoes[0]
-        idade = self._calcular_idade(pet_info.get("birth_date")) if pet_info else 3.0
+        
+        birth_date = pet_info.get("birth_date") if pet_info else None
+        idade = self._calcular_idade(birth_date)
+
+        peso_kg = ultimo.get("weight_kg")
+        if peso_kg is None:
+            raise ValueError(f"Peso real (WEIGHT_KG) não encontrado para o pet ID {pet_id}.")
 
         return {
             "petId": int(pet_id),
             "data": str(ultimo.get("measurement_date")),
             "idadeAnos": float(idade),
-            "pesoKg": float(ultimo.get("weight_kg", 10.0)),
+            "pesoKg": float(peso_kg),
             "atividadePct": float(ultimo.get("activity_level", 50.0)),
             "sonoPct": float(ultimo.get("sleep_hours", 50.0)),
             "frequenciaCardiacaBpm": float(ultimo.get("heart_rate_bpm", 100.0)),
