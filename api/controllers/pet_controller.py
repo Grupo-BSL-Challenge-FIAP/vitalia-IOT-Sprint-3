@@ -22,7 +22,7 @@ try:
 except Exception:
     pipeline = None
      
-STATUS_MAP = {0: "NORMAL", 1: "ATENÇÃO", 2: "ALERTA"}
+STATUS_MAP = {0: "NORMAL", 1: "ATTENTION", 2: "RISK"}
 
 history_service = HistoryService()
 analysis_service = AnalysisService()
@@ -83,13 +83,13 @@ async def get_pet_recommendations(pet_id: str, credentials: str = Depends(verifi
         raise HTTPException(status_code=404, detail="Pet não encontrado no histórico.")
         
     recomendacoes = []
-    if resultado["status"] == "ALERTA":
+    if resultado["status"] == "RISK":
         recomendacoes.append({
             "categoria": "Acompanhamento", 
             "acao": "Caso as alterações persistam, considerar avaliação veterinária.", 
             "justificativa": resultado["justificativaNumerica"]
         })
-    elif resultado["status"] == "ATENÇÃO":
+    elif resultado["status"] == "ATTENTION":
         recomendacoes.append({
             "categoria": "Acompanhamento", 
             "acao": "Acompanhar as alterações identificadas nos próximos dias.", 

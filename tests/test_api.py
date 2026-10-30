@@ -55,7 +55,7 @@ def test_pet_inexistente():
 def test_alteracao_atencao():
     with patch("api.controllers.pet_controller.analysis_service") as mock_analysis:
         mock_analysis.analisar_comportamento.return_value = {
-            "status": "ATENÇÃO",
+            "status": "ATTENTION",
             "mediaHistorica": 65.7,
             "atual": 50.0,
             "variacaoPct": -23.8,
@@ -64,12 +64,12 @@ def test_alteracao_atencao():
         
         response = client.get("/api/ai/pets/1000/recommendations", headers=HEADERS)
         assert response.status_code == 200
-        assert "ATENÇÃO" in response.text
+        assert "ATTENTION" in response.text
 
 def test_alteracao_alerta():
     with patch("api.controllers.pet_controller.analysis_service") as mock_analysis:
         mock_analysis.analisar_comportamento.return_value = {
-            "status": "ALERTA",
+            "status": "RISK",
             "mediaHistorica": 65.7,
             "atual": 10.0,
             "variacaoPct": -84.7,
@@ -78,7 +78,7 @@ def test_alteracao_alerta():
         
         response = client.get("/api/ai/pets/1000/recommendations", headers=HEADERS)
         assert response.status_code == 200
-        assert "ALERTA" in response.text
+        assert "RISK" in response.text
 
 def test_dashboard_endpoint():
     with patch("api.controllers.pet_controller.analysis_service") as mock_analysis:
@@ -148,7 +148,7 @@ def test_insights_unificado_com_analysis():
         assert response.status_code == 200
         data = response.json()
         assert "status_analise" in data
-        assert data["status_analise"] in ["NORMAL", "ATENÇÃO", "ALERTA"]
+        assert data["status_analise"] in ["NORMAL", "ATTENTION", "RISK"]
     
 def test_consistencia_status_entre_endpoints():
     with patch("api.controllers.pet_controller.analysis_service") as mock_analysis, \
@@ -156,7 +156,7 @@ def test_consistencia_status_entre_endpoints():
          patch("api.controllers.pet_controller.llm_service") as mock_llm:
         
         mock_analysis.analisar_comportamento.return_value = {
-            "status": "ATENÇÃO",
+            "status": "ATTENTION",
             "mediaHistorica": 65.7,
             "atual": 50.0,
             "variacaoPct": -23.8,
@@ -194,15 +194,15 @@ def test_consistencia_status_entre_endpoints():
         status_insights = resp_insights.json().get("status_analise")
         status_recommendations = resp_recommendations.json().get("status_analise")
 
-        assert status_dashboard == "ATENÇÃO"
-        assert status_insights == "ATENÇÃO"
-        assert status_recommendations == "ATENÇÃO"
+        assert status_dashboard == "ATTENTION"
+        assert status_insights == "ATTENTION"
+        assert status_recommendations == "ATTENTION"
         assert status_dashboard == status_insights == status_recommendations
 
         mock_llm.answer.assert_called_once()
         args, _ = mock_llm.answer.call_args
         contexto_enviado = args[0]
-        assert contexto_enviado.get("classificacao") == "ATENÇÃO"
+        assert contexto_enviado.get("classificacao") == "ATTENTION"
 
 
 @app.get("/health", tags=["Health"])
