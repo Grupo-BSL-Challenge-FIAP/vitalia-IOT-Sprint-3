@@ -154,16 +154,6 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
     except ValueError:
         pid_formatted = pet_id
 
-    try:
-        history_service.salvar_registro(
-            pet_id=int(pet_id),
-            peso=dados_pet.peso_kg,
-            atividade=dados_pet.atividade_diaria_pct,
-            sono=dados_pet.sono_horas
-        )
-    except Exception as e:
-        print(f"Erro ao salvar histórico: {e}")
-
     return {
         "petId": pid_formatted,
         "classId": class_id,
