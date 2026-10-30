@@ -16,7 +16,7 @@ class PetRepository:
 
     def obter_informacoes_pet(self, pet_id: int):
         query = """
-            SELECT PET_ID, NAME
+            SELECT PET_ID, NAME, BIRTH_DATE, SPECIES, WEIGHT_KG
             FROM TB_VITALIA_PET
             WHERE PET_ID = :pet_id
         """
@@ -28,7 +28,10 @@ class PetRepository:
                     if row:
                         return {
                             "pet_id": row[0],
-                            "nome": row[1]
+                            "nome": row[1],
+                            "birth_date": row[2],
+                            "species": row[3],
+                            "weight_kg": row[4]
                         }
         except Exception as e:
             print(f"[PetRepository] Erro ao buscar informações do pet: {e}")
@@ -36,7 +39,7 @@ class PetRepository:
 
     def obter_historico_medicoes(self, pet_id: int):
         query = """
-            SELECT MEASUREMENT_ID, PET_ID, ACTIVITY_LEVEL, SLEEP_HOURS, 
+            SELECT MEASUREMENT_ID, PET_ID, WEIGHT_KG, ACTIVITY_LEVEL, SLEEP_HOURS, 
                    HEART_RATE_BPM, RESPIRATORY_RATE, TEMPERATURE_C, 
                    BEHAVIOR_SCORE, MEASUREMENT_DATE
             FROM TB_VITALIA_HEALTH_MEASUREMENT

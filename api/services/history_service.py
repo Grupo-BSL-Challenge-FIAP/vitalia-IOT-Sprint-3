@@ -23,7 +23,7 @@ class HistoryService:
             return None
             
         ultimo = medicoes[0]
-        idade = self._calcular_idade(pet_info.get("data_nascimento")) if pet_info else 3.0
+        idade = self._calcular_idade(pet_info.get("birth_date")) if pet_info else 3.0
 
         return {
             "petId": int(pet_id),
