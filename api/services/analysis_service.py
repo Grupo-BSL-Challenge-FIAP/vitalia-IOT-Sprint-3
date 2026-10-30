@@ -23,7 +23,7 @@ class AnalysisService:
         metricas_map = [
             ("peso", float(ultimo.get("pesoKg", 0)), float(medias.get("mediaPesoKg", 0))),
             ("atividade", float(ultimo.get("atividadePct", 0)), float(medias.get("mediaAtividadePct", 0))),
-            ("sono", float(ultimo.get("sonoPct", 0)), float(medias.get("mediaSonoPct", 0))),
+            ("sono", float(ultimo.get("sonoHoras", 0)), float(medias.get("mediaSonoHoras", 0))),
             ("temperatura", float(ultimo.get("temperaturaC", 38.5)), float(medias.get("mediaTemperaturaC", 38.5)))
         ]
 
@@ -43,7 +43,7 @@ class AnalysisService:
             "idade_anos": float(ultimo.get("idadeAnos", 3.0)), 
             "peso_kg": float(ultimo.get("pesoKg", 10.0)),
             "atividade_diaria_pct": float(ultimo.get("atividadePct", 50.0)),
-            "sono_diario_pct": float(ultimo.get("sonoPct", 50.0)),
+            "sono_horas": float(ultimo.get("sonoHoras", 12.0)),
             "frequencia_cardiaca_bpm": float(ultimo.get("frequenciaCardiacaBpm", 100.0)),
             "frequencia_respiratoria": float(ultimo.get("frequenciaRespiratoria", 24.0)),
             "temperatura_c": float(ultimo.get("temperaturaC", 38.5)),

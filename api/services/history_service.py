@@ -39,7 +39,7 @@ class HistoryService:
             "idadeAnos": float(idade),
             "pesoKg": float(peso_kg),
             "atividadePct": float(ultimo.get("activity_level", 50.0)),
-            "sonoPct": float(ultimo.get("sleep_hours", 50.0)),
+            "sonoHoras": float(ultimo.get("sleep_hours", 12.0)),
             "frequenciaCardiacaBpm": float(ultimo.get("heart_rate_bpm", 100.0)),
             "frequenciaRespiratoria": float(ultimo.get("respiratory_rate", 24.0)),
             "temperaturaC": float(ultimo.get("temperature_c", 38.5)),
@@ -57,6 +57,6 @@ class HistoryService:
         return {
             "mediaPesoKg": float(historical_df['weight_kg'].mean().round(2)) if 'weight_kg' in historical_df else 0.0,
             "mediaAtividadePct": float(historical_df['activity_level'].mean().round(1)) if 'activity_level' in historical_df else 0.0,
-            "mediaSonoPct": float(historical_df['sleep_hours'].mean().round(1)) if 'sleep_hours' in historical_df else 0.0,
+            "mediaSonoHoras": float(historical_df['sleep_hours'].mean().round(1)) if 'sleep_hours' in historical_df else 12.0,
             "mediaTemperaturaC": float(historical_df['temperature_c'].mean().round(1)) if 'temperature_c' in historical_df else 38.5
         }

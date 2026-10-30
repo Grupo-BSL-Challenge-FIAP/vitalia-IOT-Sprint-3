@@ -24,7 +24,7 @@ features = [
     "idade_anos", 
     "peso_kg", 
     "atividade_diaria_pct", 
-    "sono_diario_pct", 
+    "sono_horas",
     "frequencia_cardiaca_bpm", 
     "frequencia_respiratoria", 
     "temperatura_c", 

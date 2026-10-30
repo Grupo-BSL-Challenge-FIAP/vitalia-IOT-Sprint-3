@@ -39,16 +39,16 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
                     pet_counters[pid] = hoje - timedelta(days=np.random.randint(0, 5))
             datas_base.append(pet_counters[pid].strftime("%Y-%m-%d"))
 
-    # Features alinhadas com o Oracle
+   
     atividade_diaria = [round(float(np.clip(np.random.normal(70, 10), 10, 100)), 2) for _ in range(num_records)]
-    sono_diario = [round(float(np.clip(np.random.normal(50, 10), 10, 90)), 2) for _ in range(num_records)]
+    sono_horas = [round(float(np.clip(np.random.normal(12, 2), 4.0, 18.0)), 2) for _ in range(num_records)]
     freq_cardiaca = [round(float(np.clip(np.random.normal(100, 20), 50, 180)), 1) for _ in range(num_records)]
     freq_respiratoria = [round(float(np.clip(np.random.normal(24, 6), 10, 60)), 1) for _ in range(num_records)]
     temperatura = [round(float(np.clip(np.random.normal(38.5, 0.5), 36.5, 41.0)), 1) for _ in range(num_records)]
     behavior_score = [round(float(np.clip(np.random.normal(8, 2), 1, 10)), 1) for _ in range(num_records)]
 
     status = []
-    for ativ, sono, fc, fr, temp, score in zip(atividade_diaria, sono_diario, freq_cardiaca, freq_respiratoria, temperatura, behavior_score):
+    for ativ, sono_horas, fc, fr, temp, score in zip(atividade_diaria, sono_horas, freq_cardiaca, freq_respiratoria, temperatura, behavior_score):
         if np.random.rand() < 0.05: 
             st = np.random.choice(["NORMAL", "ATTENTION", "RISK"], p=[0.7, 0.2, 0.1])
         else:
@@ -66,7 +66,7 @@ def generate_synthetic_data(filepath: str, num_records: int = 2000):
         'idade_anos': idades_fixas,
         'peso_kg': pesos_variados,
         'atividade_diaria_pct': atividade_diaria,
-        'sono_diario_pct': sono_diario,
+        'sono_horas': sono_horas, 
         'frequencia_cardiaca_bpm': freq_cardiaca,
         'frequencia_respiratoria': freq_respiratoria,
         'temperatura_c': temperatura,
@@ -97,7 +97,7 @@ def preprocess_data(raw_filepath: str, processed_filepath: str):
             'idade_anos': [3.0, 3.0, 3.0, 3.0, 3.0],
             'peso_kg': [12.5, 12.6, 12.4, 12.5, 12.7],
             'atividade_diaria_pct': [75.0, 80.0, 70.0, 78.0, 82.0],
-            'sono_diario_pct': [50.0, 45.0, 55.0, 48.0, 52.0],
+            'sono_horas': [12.0, 11.5, 12.5, 12.0, 11.8],
             'frequencia_cardiaca_bpm': [95.0, 98.0, 92.0, 96.0, 94.0],
             'frequencia_respiratoria': [22.0, 24.0, 20.0, 23.0, 21.0],
             'temperatura_c': [38.4, 38.5, 38.3, 38.5, 38.4],
