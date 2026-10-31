@@ -31,12 +31,19 @@ class PetRepository:
                     if row:
                         return {
                             "pet_id": row[0],
+                            "PET_ID": row[0],
                             "nome": row[1],
+                            "NOME": row[1],
                             "birth_date": row[2],
+                            "BIRTH_DATE": row[2],
                             "breed_id": row[3],
+                            "BREED_ID": row[3],
                             "weight_kg": row[4],
+                            "WEIGHT_KG": row[4],
                             "sex": row[5],
-                            "status": row[6]
+                            "SEX": row[5],
+                            "status": row[6],
+                            "STATUS": row[6]
                         }
         except Exception as e:
             print(f"[PetRepository] Erro ao buscar informações do pet: {e}")

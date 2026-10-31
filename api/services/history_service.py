@@ -29,7 +29,7 @@ class HistoryService:
         birth_date = pet_info.get("birth_date") if pet_info else None
         idade = self._calcular_idade(birth_date)
 
-        peso_kg = ultimo.get("weight_kg")
+        peso_kg = pet_info.get("weight_kg") if pet_info else None
         if peso_kg is None:
             raise ValueError(f"Peso real (WEIGHT_KG) não encontrado para o pet ID {pet_id}.")
 
