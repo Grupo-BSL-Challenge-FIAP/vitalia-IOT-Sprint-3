@@ -1,11 +1,14 @@
 import os
 import oracledb
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class PetRepository:
     def __init__(self):
-        self.user = os.getenv("ORACLE_USER", "rm565049")
-        self.password = os.getenv("ORACLE_PASSWORD", "030705")
-        self.dsn = os.getenv("ORACLE_DSN", "oracle.fiap.com.br:1521/ORCL")
+        self.user = os.getenv("ORACLE_USER")
+        self.password = os.getenv("ORACLE_PASSWORD")
+        self.dsn = os.getenv("ORACLE_DSN")
 
     def _get_connection(self):
         return oracledb.connect(
@@ -16,7 +19,7 @@ class PetRepository:
 
     def obter_informacoes_pet(self, pet_id: int):
         query = """
-            SELECT PET_ID, NAME, BIRTH_DATE, SPECIES, WEIGHT_KG
+            SELECT PET_ID, NAME, BIRTH_DATE, BREED_ID, WEIGHT_KG, SEX, STATUS
             FROM TB_VITALIA_PET
             WHERE PET_ID = :pet_id
         """
@@ -30,8 +33,10 @@ class PetRepository:
                             "pet_id": row[0],
                             "nome": row[1],
                             "birth_date": row[2],
-                            "species": row[3],
-                            "weight_kg": row[4]
+                            "breed_id": row[3],
+                            "weight_kg": row[4],
+                            "sex": row[5],
+                            "status": row[6]
                         }
         except Exception as e:
             print(f"[PetRepository] Erro ao buscar informações do pet: {e}")
@@ -39,7 +44,7 @@ class PetRepository:
 
     def obter_historico_medicoes(self, pet_id: int):
         query = """
-            SELECT MEASUREMENT_ID, PET_ID, WEIGHT_KG, ACTIVITY_LEVEL, SLEEP_HOURS, 
+            SELECT MEASUREMENT_ID, PET_ID, ACTIVITY_LEVEL, SLEEP_HOURS, 
                    HEART_RATE_BPM, RESPIRATORY_RATE, TEMPERATURE_C, 
                    BEHAVIOR_SCORE, MEASUREMENT_DATE
             FROM TB_VITALIA_HEALTH_MEASUREMENT
