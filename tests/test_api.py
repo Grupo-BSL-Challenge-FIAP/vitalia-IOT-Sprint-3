@@ -13,10 +13,12 @@ HEADERS = {"Authorization": "Bearer token-compartilhado-123"}
 HEADERS_INVALIDO = {"Authorization": "Bearer token-errado"}
 
 VALID_PAYLOAD = {
-    "idade_anos": 3.5,
-    "peso_kg": 15.0,
-    "atividade_diaria_pct": 15.0,
-    "sono_horas": 12.0
+    "activity_level": 75.0,
+    "sleep_hours": 8.5,
+    "heart_rate_bpm": 125.0,
+    "respiratory_rate": 22.0,
+    "temperature_c": 38.2,
+    "behavior_score": 90.0
 }
 
 def test_predict_sem_autenticacao():
@@ -27,22 +29,15 @@ def test_token_invalido():
     response = client.post("/api/ai/pets/1000/predict", json=VALID_PAYLOAD, headers=HEADERS_INVALIDO)
     assert response.status_code == 401
 
-def test_predict_idade_peso_invalido():
+def test_predict_atividade_invalida():
     payload_invalido = VALID_PAYLOAD.copy()
-    payload_invalido["idade_anos"] = -1.0
-    payload_invalido["peso_kg"] = 0.0
-    response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
-    assert response.status_code == 422
-
-def test_predict_percentual_acima_100():
-    payload_invalido = VALID_PAYLOAD.copy()
-    payload_invalido["atividade_diaria_pct"] = 150.0
+    payload_invalido["activity_level"] = -5.0
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
 def test_predict_sono_invalido():
     payload_invalido = VALID_PAYLOAD.copy()
-    payload_invalido["sono_horas"] = 25.0
+    payload_invalido["sleep_hours"] = 30.0
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
@@ -109,7 +104,7 @@ def test_machine_learning_predict():
             "predicao": "Saudável",
             "confidence": 0.95
         }
-        response = client.post("/api/ai/pets/1000/predict", json={}, headers=HEADERS)
+        response = client.post("/api/ai/pets/1000/predict", json=VALID_PAYLOAD, headers=HEADERS)
 
         if response.status_code == 422:
             print("Erro de validação do Pydantic:", response.json())
