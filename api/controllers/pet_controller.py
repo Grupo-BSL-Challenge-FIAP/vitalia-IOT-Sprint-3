@@ -118,7 +118,7 @@ async def prever_comportamento(pet_id: str, dados_pet: PetDataInput, credentials
         "idade_anos": dados_pet.idade_anos,
         "peso_kg": dados_pet.peso_kg,
         "atividade_diaria_pct": dados_pet.atividade_diaria_pct,
-        "sono_diario_pct": dados_pet.sono_diario_pct,
+        "sono_horas": dados_pet.sono_horas,
         "frequencia_cardiaca_bpm": dados_pet.frequencia_cardiaca_bpm,
         "frequencia_respiratoria": dados_pet.frequencia_respiratoria,
         "temperatura_c": dados_pet.temperatura_c,

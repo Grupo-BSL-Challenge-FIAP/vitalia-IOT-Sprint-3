@@ -13,12 +13,14 @@ HEADERS = {"Authorization": "Bearer token-compartilhado-123"}
 HEADERS_INVALIDO = {"Authorization": "Bearer token-errado"}
 
 VALID_PAYLOAD = {
-    "activity_level": 75.0,
-    "sleep_hours": 8.5,
-    "heart_rate_bpm": 125.0,
-    "respiratory_rate": 22.0,
-    "temperature_c": 38.2,
-    "behavior_score": 90.0
+    "idade_anos": 3.5,
+    "peso_kg": 15.0,
+    "atividade_diaria_pct": 15.0,
+    "sono_horas": 8.0,           
+    "frequencia_cardiaca_bpm": 110.0,
+    "frequencia_respiratoria": 20.0,
+    "temperatura_c": 38.5,
+    "score_comportamento": 5.0     
 }
 
 def test_predict_sem_autenticacao():
@@ -31,13 +33,13 @@ def test_token_invalido():
 
 def test_predict_atividade_invalida():
     payload_invalido = VALID_PAYLOAD.copy()
-    payload_invalido["activity_level"] = -5.0
+    payload_invalido["atividade_diaria_pct"] = -5.0
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
 def test_predict_sono_invalido():
     payload_invalido = VALID_PAYLOAD.copy()
-    payload_invalido["sleep_hours"] = 30.0
+    payload_invalido["sono_horas"] = 30.0 
     response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
     assert response.status_code == 422
 
@@ -97,7 +99,7 @@ def test_recommendations_endpoint():
         response = client.get("/api/ai/pets/1000/recommendations", headers=HEADERS)
         assert response.status_code == 200
 
-def test_machine_learning_predict():
+def test_machine_learning_predict_valido():
     with patch("api.controllers.pet_controller.analysis_service") as mock_analysis:
         mock_analysis.analisar_comportamento.return_value = {
             "status": "NORMAL",
@@ -107,9 +109,15 @@ def test_machine_learning_predict():
         response = client.post("/api/ai/pets/1000/predict", json=VALID_PAYLOAD, headers=HEADERS)
 
         if response.status_code == 422:
-            print("Erro de validação do Pydantic:", response.json())
+            print("\nDETALHE DO ERRO 422:", response.json())
+            
+        assert response.status_code == 200
 
-        assert response.status_code in [200, 422]
+def test_machine_learning_predict_invalido():
+    payload_invalido = VALID_PAYLOAD.copy()
+    payload_invalido["atividade_diaria_pct"] = -99.0 
+    response = client.post("/api/ai/pets/1000/predict", json=payload_invalido, headers=HEADERS)
+    assert response.status_code == 422
 
 def test_ask_pet_dinamico():
     with patch("api.controllers.pet_controller.llm_service") as mock_llm, \
